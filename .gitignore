@@ -1,0 +1,19 @@
+/target
+**/*.rs.bk
+Cargo.lock.bak
+
+# Web shell
+node_modules/
+dist/
+.vite/
+shells/web/pkg/
+shells/web/src/wasm/
+
+# WASM build artifacts
+crates/apricity-ffi/pkg/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.swp

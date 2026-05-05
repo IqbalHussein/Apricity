@@ -1,0 +1,14 @@
+[package]
+name = "apricity-recipes"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Recipe model, in-memory store, and persistence trait. Host shells implement I/O."
+
+[dependencies]
+apricity-core = { path = "../apricity-core" }
+apricity-lut = { path = "../apricity-lut" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }

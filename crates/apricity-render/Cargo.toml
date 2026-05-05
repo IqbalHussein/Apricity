@@ -1,0 +1,18 @@
+[package]
+name = "apricity-render"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "wgpu-based Stage 1 + Stage 2 compute pipeline for Apricity, with CPU reference impl."
+
+[features]
+default = []
+golden-images = []
+
+[dependencies]
+apricity-core = { path = "../apricity-core" }
+wgpu = { workspace = true }
+bytemuck = { workspace = true }
+glam = { workspace = true }
+thiserror = { workspace = true }

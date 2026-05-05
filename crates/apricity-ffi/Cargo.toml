@@ -1,0 +1,25 @@
+[package]
+name = "apricity-ffi"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "FFI surface: WASM bindings for web, UniFFI bindings for Kotlin (Android) and Swift (iOS)."
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+default = []
+wasm = ["dep:wasm-bindgen", "dep:serde-wasm-bindgen"]
+uniffi = ["dep:uniffi"]
+
+[dependencies]
+apricity-core = { path = "../apricity-core" }
+apricity-recipes = { path = "../apricity-recipes" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+wasm-bindgen = { version = "0.2", optional = true }
+serde-wasm-bindgen = { version = "0.6", optional = true }
+uniffi = { version = "0.28", optional = true }

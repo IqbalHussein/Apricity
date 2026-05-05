@@ -1,0 +1,12 @@
+[package]
+name = "apricity-scopes"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Waveform, vectorscope, RGB parade, histogram — CPU + wgpu compute kernels."
+
+[dependencies]
+apricity-core = { path = "../apricity-core" }
+wgpu = { workspace = true }
+bytemuck = { workspace = true }

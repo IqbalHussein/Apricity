@@ -1,0 +1,6 @@
+avoid-breaking-exported-api = false
+disallowed-methods = [
+    { path = "std::time::Instant::now", reason = "Inject the clock; pipeline code must be deterministic." },
+    { path = "std::time::SystemTime::now", reason = "Inject the clock; pipeline code must be deterministic." },
+    { path = "rand::thread_rng", reason = "Pass an explicit seed; pipeline code must be reproducible." },
+]
