@@ -8,7 +8,7 @@ description = "wgpu-based Stage 1 + Stage 2 compute pipeline for Apricity, with 
 
 [features]
 default = []
-golden-images = []
+golden-images = ["dep:image"]
 
 [dependencies]
 apricity-core = { path = "../apricity-core" }
@@ -16,3 +16,4 @@ wgpu = { workspace = true }
 bytemuck = { workspace = true }
 glam = { workspace = true }
 thiserror = { workspace = true }
+image = { workspace = true, optional = true, default-features = false, features = ["png"] }

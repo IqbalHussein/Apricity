@@ -11,6 +11,7 @@
 
 pub mod color_space;
 pub mod grade_parameters;
+pub mod transfer;
 
-pub use color_space::ColorSpace;
+pub use color_space::{convert, ColorSpace};
 pub use grade_parameters::GradeParameters;

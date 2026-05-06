@@ -9,5 +9,8 @@
 
 #![forbid(unsafe_code)]
 
+#[cfg(feature = "golden-images")]
+pub mod golden;
+
 /// Placeholder for the wgpu-backed pipeline. Filled in M2.
 pub struct Pipeline;

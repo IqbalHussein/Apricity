@@ -93,6 +93,7 @@ dependencies = [
  "apricity-core",
  "bytemuck",
  "glam",
+ "image",
  "thiserror",
  "wgpu",
 ]
