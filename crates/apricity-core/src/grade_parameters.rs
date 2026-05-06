@@ -31,13 +31,21 @@ pub struct GradeParameters {
 
 impl Default for GradeParameters {
     fn default() -> Self {
-        Self { exposure: 0.0, temperature: 0.0, tint: 0.0 }
+        Self {
+            exposure: 0.0,
+            temperature: 0.0,
+            tint: 0.0,
+        }
     }
 }
 
 impl GradeParameters {
     /// Identity grade — no adjustment.
-    pub const IDENTITY: Self = Self { exposure: 0.0, temperature: 0.0, tint: 0.0 };
+    pub const IDENTITY: Self = Self {
+        exposure: 0.0,
+        temperature: 0.0,
+        tint: 0.0,
+    };
 }
 
 #[cfg(test)]

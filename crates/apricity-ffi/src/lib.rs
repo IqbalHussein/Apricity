@@ -18,8 +18,7 @@ mod wasm {
     /// WASM build; real surface lands in M1.
     #[wasm_bindgen]
     pub fn identity_grade_json() -> String {
-        serde_json::to_string(&GradeParameters::IDENTITY)
-            .expect("IDENTITY serializes")
+        serde_json::to_string(&GradeParameters::IDENTITY).expect("IDENTITY serializes")
     }
 
     /// Library version, for the web shell to confirm it loaded the right WASM.

@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build:wasm": "wasm-pack build ../../crates/apricity-ffi --target web --features wasm --out-dir ../../shells/web/src/wasm",
+    "build:wasm": "cargo build --manifest-path ../../crates/apricity-ffi/Cargo.toml --target wasm32-unknown-unknown --release --features wasm && wasm-bindgen ../../target/wasm32-unknown-unknown/release/apricity_ffi.wasm --target web --out-dir ./src/wasm --out-name apricity_ffi",
     "dev": "pnpm run build:wasm && vite",
     "build": "pnpm run build:wasm && vite build",
     "preview": "vite preview",
@@ -12,7 +12,7 @@
     "test:watch": "vitest",
     "lint": "eslint src --ext .ts,.tsx",
     "format": "prettier --write \"src/**/*.{ts,tsx,css,html}\"",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "pnpm run build:wasm && tsc --noEmit"
   },
   "dependencies": {
     "solid-js": "^1.8.0"
@@ -20,6 +20,7 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
+    "@webgpu/types": "^0.1.69",
     "eslint": "^8.57.0",
     "eslint-plugin-solid": "^0.13.0",
     "prettier": "^3.2.0",
