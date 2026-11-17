@@ -135,8 +135,9 @@ name = "apricity-scopes"
 version = "0.0.0"
 dependencies = [
  "apricity-core",
- "bytemuck",
- "wgpu",
+ "criterion",
+ "glam",
+ "serde",
 ]
 
 [[package]]

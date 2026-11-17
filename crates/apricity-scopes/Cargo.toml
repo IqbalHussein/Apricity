@@ -4,9 +4,16 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
-description = "Waveform, vectorscope, RGB parade, histogram — CPU + wgpu compute kernels."
+description = "Waveform, vectorscope, RGB parade, histogram and broadcast-legal checks (pure Rust CPU)."
 
 [dependencies]
 apricity-core = { path = "../apricity-core" }
-wgpu = { workspace = true }
-bytemuck = { workspace = true }
+glam = { workspace = true }
+serde = { workspace = true }
+
+[dev-dependencies]
+criterion = { workspace = true }
+
+[[bench]]
+name = "scopes"
+harness = false
