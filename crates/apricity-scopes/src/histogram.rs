@@ -29,7 +29,7 @@ pub fn histogram(pixels: &[[f32; 3]]) -> Histogram {
     // Two interleaved tables break the store-to-load dependency chain that
     // smooth gradients create by hitting the same bin on consecutive pixels.
     let mut t = [[[0u32; 256]; 4]; 2];
-    let mut add = |t: &mut [[u32; 256]; 4], p: &[f32; 3]| {
+    let add = |t: &mut [[u32; 256]; 4], p: &[f32; 3]| {
         t[0][bin(p[0])] += 1;
         t[1][bin(p[1])] += 1;
         t[2][bin(p[2])] += 1;
