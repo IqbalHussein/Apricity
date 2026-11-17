@@ -123,7 +123,8 @@ pub(crate) fn parse(tokens: &[String]) -> Parsed {
             }
             None => {
                 let w = &tokens[i];
-                if !STOPWORDS.contains(&w.as_str()) {
+                let numeric = w.chars().all(|c| c.is_ascii_digit());
+                if !numeric && !STOPWORDS.contains(&w.as_str()) {
                     if !parsed.unmatched.contains(w) {
                         parsed.unmatched.push(w.clone());
                     }

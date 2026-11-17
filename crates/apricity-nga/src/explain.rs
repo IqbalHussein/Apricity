@@ -128,8 +128,27 @@ fn terms_for(attributions: &[Attribution], path: &str, delta: f32) -> Vec<String
             terms.push(a.term.clone());
         }
     }
+    if terms.is_empty() {
+        for a in attributions.iter().filter(|a| a.path == path) {
+            if !terms.contains(&a.term) {
+                terms.push(a.term.clone());
+            }
+        }
+    }
     terms.truncate(3);
     terms
+}
+
+fn reset_sentence(what: &str, amount: Option<&str>, with_reason: bool) -> String {
+    let mut s = match amount {
+        Some(a) => format!("Reset {what} to neutral ({a})"),
+        None => format!("Reset the {what} to linear"),
+    };
+    if with_reason {
+        s.push_str(" for the new look");
+    }
+    s.push('.');
+    s
 }
 
 fn render(
@@ -263,14 +282,18 @@ pub fn diff(
             delta,
             before_text: value_text(spec, b),
             after_text: value_text(spec, a),
-            rationale: render(
-                template,
-                delta > 0.0,
-                spec.describes,
-                "",
-                Some(&amount),
-                &terms,
-            ),
+            rationale: if terms.is_empty() && (a - spec.default).abs() <= spec.step * 0.5 {
+                reset_sentence(spec.describes, Some(&amount), !attributions.is_empty())
+            } else {
+                render(
+                    template,
+                    delta > 0.0,
+                    spec.describes,
+                    "",
+                    Some(&amount),
+                    &terms,
+                )
+            },
             console_anchor: spec.path.to_owned(),
         });
     }
@@ -304,7 +327,11 @@ pub fn diff(
             delta: 0.0,
             before_text: curve_text(b),
             after_text: curve_text(a),
-            rationale: render(CURVE_TEMPLATE, true, what, curve_shape(a).1, None, &terms),
+            rationale: if terms.is_empty() && curve_shape(a).0 == "Linear" {
+                reset_sentence(what, None, !attributions.is_empty())
+            } else {
+                render(CURVE_TEMPLATE, true, what, curve_shape(a).1, None, &terms)
+            },
             console_anchor: path.to_owned(),
         });
     }

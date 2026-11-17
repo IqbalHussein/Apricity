@@ -96,7 +96,16 @@ fn assemble(current: &GradeParameters, plan: Plan) -> NgaResult {
     } else {
         let mut base = current.clone();
         if plan.fresh {
-            base.stage2 = CreativeParameters::IDENTITY;
+            let CreativeParameters {
+                lut_id,
+                lut_strength,
+                ..
+            } = base.stage2.clone();
+            base.stage2 = CreativeParameters {
+                lut_id,
+                lut_strength,
+                ..CreativeParameters::IDENTITY
+            };
         }
         let mut attrs = engine::apply_terms(&mut base, &plan.applied, plan.grain_seed);
         attrs.extend(engine::apply_jitter(&mut base, &plan.jitter));

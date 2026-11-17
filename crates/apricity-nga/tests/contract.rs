@@ -392,3 +392,98 @@ fn stage2_identity_constant_is_what_fresh_resets_to() {
     assert_ne!(r.params.stage2, CreativeParameters::IDENTITY);
     assert!((r.params.stage2.vibrance - 0.0).abs() < 1e-6);
 }
+
+#[test]
+fn stock_names_with_numbers_and_filler_are_understood() {
+    let r = run(
+        "Kodak Portra 400 film stock",
+        &identity(),
+        PromptMode::Fresh,
+    );
+    assert_eq!(r.matched_terms, vec!["kodak portra 400"]);
+    assert!(r.unmatched_words.is_empty(), "{:?}", r.unmatched_words);
+    for p in [
+        "portra 400",
+        "portra 160",
+        "portra 800",
+        "cinestill 800t",
+        "ektar 100",
+        "velvia 50",
+        "superia 400",
+        "hp5 plus",
+        "tri-x 400",
+    ] {
+        let r = run(p, &identity(), PromptMode::Fresh);
+        assert_eq!(r.matched_terms.len(), 1, "{p}: {:?}", r.matched_terms);
+        assert!(r.unmatched_words.is_empty(), "{p}");
+    }
+    let r = run("warm 2024", &identity(), PromptMode::Fresh);
+    assert!(r.unmatched_words.is_empty());
+}
+
+#[test]
+fn fresh_reset_changes_are_labeled_as_resets() {
+    let mut cur = identity();
+    cur.stage2.saturation = 92.0;
+    cur.stage2.tone_curve.master = apricity_core::grade_parameters::ToneCurve::IDENTITY.master;
+    let r = run("cool", &cur, PromptMode::Fresh);
+    let c = r
+        .changes
+        .iter()
+        .find(|c| c.path == "stage2.saturation")
+        .unwrap();
+    assert_eq!(
+        c.rationale,
+        "Reset overall saturation to neutral (\u{2212}92%) for the new look."
+    );
+    let mut cur = identity();
+    cur.stage2.tone_curve.master = apricity_nga::lexicon::CurvePreset::Fade.points(1.0);
+    let r = run("warm", &cur, PromptMode::Fresh);
+    let c = r
+        .changes
+        .iter()
+        .find(|c| c.path == "stage2.tone_curve.master")
+        .unwrap();
+    assert_eq!(
+        c.rationale,
+        "Reset the master tone curve to linear for the new look."
+    );
+    let mut manual = identity();
+    manual.stage2.contrast = 20.0;
+    let ch = diff(&manual, &identity(), &[]);
+    assert_eq!(ch[0].rationale, "Reset contrast to neutral (\u{2212}20%).");
+}
+
+#[test]
+fn fresh_preserves_the_lut() {
+    let mut cur = identity();
+    cur.stage2.lut_id = Some("teal.cube".into());
+    cur.stage2.lut_strength = 55.0;
+    cur.stage2.contrast = 30.0;
+    let r = run("warm", &cur, PromptMode::Fresh);
+    assert_eq!(r.params.stage2.lut_id.as_deref(), Some("teal.cube"));
+    assert_eq!(r.params.stage2.lut_strength, 55.0);
+    assert_eq!(r.params.stage2.contrast, 0.0);
+}
+
+#[test]
+fn unattributed_fresh_changes_are_always_resets() {
+    let mut base = with_stage1();
+    base.stage2.contrast = 33.0;
+    base.stage2.vignette.amount = -40.0;
+    base.stage2.tone_curve.master = apricity_nga::lexicon::CurvePreset::SCurve.points(1.0);
+    for e in ENTRIES {
+        let r = run(e.phrases[0], &base, PromptMode::Fresh);
+        for c in &r.changes {
+            let attributed = r.attributions.iter().any(|a| a.path == c.path);
+            if !attributed {
+                assert!(
+                    c.rationale.contains("Reset"),
+                    "{}: {}",
+                    e.phrases[0],
+                    c.rationale
+                );
+            }
+        }
+    }
+}

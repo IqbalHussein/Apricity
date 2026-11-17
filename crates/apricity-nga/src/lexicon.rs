@@ -1134,7 +1134,12 @@ pub static ENTRIES: &[Entry] = &[
         ],
     ),
     e(
-        &["portra 400"],
+        &[
+            "portra 400",
+            "kodak portra 400",
+            "portra 800",
+            "kodak portra 800",
+        ],
         Stock,
         &[
             ("temperature", 10.0),
@@ -1147,7 +1152,7 @@ pub static ENTRIES: &[Entry] = &[
         ],
     ),
     e(
-        &["portra 160"],
+        &["portra 160", "kodak portra 160"],
         Stock,
         &[
             ("temperature", 6.0),
@@ -1159,7 +1164,7 @@ pub static ENTRIES: &[Entry] = &[
         ],
     ),
     e(
-        &["ektar", "kodak ektar", "ektar 100"],
+        &["ektar", "kodak ektar", "ektar 100", "kodak ektar 100"],
         Stock,
         &[
             ("saturation", 20.0),
@@ -1185,7 +1190,13 @@ pub static ENTRIES: &[Entry] = &[
         ],
     ),
     e(
-        &["fuji velvia", "velvia"],
+        &[
+            "fuji velvia",
+            "velvia",
+            "velvia 50",
+            "fuji velvia 50",
+            "velvia 100",
+        ],
         Stock,
         &[
             ("saturation", 28.0),
@@ -1198,7 +1209,7 @@ pub static ENTRIES: &[Entry] = &[
         ],
     ),
     e(
-        &["fuji superia", "superia"],
+        &["fuji superia", "superia", "superia 400", "fuji superia 400"],
         Stock,
         &[
             ("tint", -8.0),
@@ -1263,7 +1274,7 @@ pub static ENTRIES: &[Entry] = &[
     )
     .curve(Soft),
     e(
-        &["ilford hp5", "hp5", "ilford"],
+        &["ilford hp5", "hp5", "ilford", "hp5 plus", "ilford hp5 plus"],
         Stock,
         &[
             ("saturation", -100.0),
@@ -1273,7 +1284,14 @@ pub static ENTRIES: &[Entry] = &[
         ],
     ),
     e(
-        &["tri x", "trix", "kodak tri x"],
+        &[
+            "tri x",
+            "trix",
+            "kodak tri x",
+            "tri x 400",
+            "kodak tri x 400",
+            "trix 400",
+        ],
         Stock,
         &[
             ("saturation", -100.0),
@@ -2209,8 +2227,8 @@ pub(crate) static STOPWORDS: &[&str] = &[
     "be", "some", "in", "on", "for", "make", "making", "give", "me", "my", "i", "want", "like",
     "look", "looks", "looking", "feel", "feeling", "please", "can", "you", "grade", "color",
     "colour", "colors", "colours", "tone", "tones", "style", "vibe", "vibes", "overall", "image",
-    "photo", "picture", "shot", "footage", "video", "clip", "but", "just", "so", "then", "also",
-    "bit", "little",
+    "photo", "picture", "shot", "footage", "video", "clip", "film", "stock", "but", "just", "so",
+    "then", "also", "bit", "little",
 ];
 
 /// What a normalized phrase resolves to.
