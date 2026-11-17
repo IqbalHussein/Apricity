@@ -8,7 +8,6 @@ description = "Recipe model, in-memory store, and persistence trait. Host shells
 
 [dependencies]
 apricity-core = { path = "../apricity-core" }
-apricity-lut = { path = "../apricity-lut" }
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }

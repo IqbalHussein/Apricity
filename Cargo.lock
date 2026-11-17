@@ -107,7 +107,6 @@ name = "apricity-recipes"
 version = "0.0.0"
 dependencies = [
  "apricity-core",
- "apricity-lut",
  "serde",
  "serde_json",
  "thiserror 1.0.69",

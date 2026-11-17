@@ -8,5 +8,5 @@ description = "Image read/write with color-space tagging. Video I/O is host-supp
 
 [dependencies]
 apricity-core = { path = "../apricity-core" }
-image = { workspace = true, features = ["jpeg", "png", "webp"] }
+image = { workspace = true, features = ["png", "jpeg", "webp"] }
 thiserror = { workspace = true }
