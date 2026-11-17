@@ -4,11 +4,16 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
-description = "Neural Grading Agent: ONNX model wrapper, prompt → GradeParameters decoder, Explainability differ."
+description = "Neural Grading Agent: deterministic on-device lexicon engine, prompt → GradeParameters, Explainability differ."
+
+[features]
+default = []
+# Reserved for the ADR-0003 ONNX model; nothing in this crate requires it.
+onnx = ["dep:ort"]
 
 [dependencies]
 apricity-core = { path = "../apricity-core" }
-ort = { workspace = true }
+ort = { workspace = true, optional = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }

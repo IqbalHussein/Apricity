@@ -38,10 +38,41 @@ pub(crate) fn reference_count(counts: &[u32]) -> Option<f32> {
     Some(*v as f32)
 }
 
-/// Log-curve intensity in `(0, 1]` for a nonzero hit count. Alpha floors at
-/// 0.2 so single hits stay visible.
-#[inline]
-pub(crate) fn alpha_for(count: u32, reference: f32) -> u8 {
-    let i = ((1.0 + count as f32).ln() / (1.0 + reference).ln()).min(1.0);
-    (255.0 * (0.2 + 0.8 * i)).round() as u8
+/// Alpha lookup for hit counts: log curve normalised by a reference count.
+/// Small counts (the overwhelmingly common case) are tabulated so the
+/// per-bin cost is a table read, not two `ln` calls.
+pub(crate) struct AlphaMap {
+    table: Vec<u8>,
+    reference: f32,
+    denom: f32,
+}
+
+impl AlphaMap {
+    const TABLE_LEN: usize = 1024;
+
+    pub(crate) fn new(reference: f32) -> Self {
+        let denom = (1.0 + reference).ln();
+        let mut m = Self {
+            table: Vec::new(),
+            reference,
+            denom,
+        };
+        m.table = (0..Self::TABLE_LEN as u32).map(|c| m.compute(c)).collect();
+        m
+    }
+
+    fn compute(&self, count: u32) -> u8 {
+        let i = ((1.0 + count as f32).ln() / self.denom).min(1.0);
+        (255.0 * (0.2 + 0.8 * i)).round() as u8
+    }
+
+    /// Alpha for a nonzero `count`; floors at 0.2 so single hits stay visible.
+    #[inline]
+    pub(crate) fn alpha(&self, count: u32) -> u8 {
+        match self.table.get(count as usize) {
+            Some(&a) => a,
+            None if count as f32 >= self.reference => 255,
+            None => self.compute(count),
+        }
+    }
 }

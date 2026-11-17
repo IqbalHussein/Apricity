@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use crate::luma;
+use crate::{luma, unit};
 
 /// 256-bin histograms over `[0, 1]` of output-encoded values.
 ///
@@ -21,28 +21,35 @@ pub struct Histogram {
 
 #[inline]
 fn bin(v: f32) -> usize {
-    if v.is_nan() {
-        0
-    } else {
-        (v.clamp(0.0, 1.0) * 256.0).min(255.0) as usize
-    }
+    ((unit(v) * 256.0) as usize).min(255)
 }
 
 /// Histogram of output-encoded RGB `pixels` (see [`Histogram`]).
 pub fn histogram(pixels: &[[f32; 3]]) -> Histogram {
-    let mut h = Histogram {
-        red: vec![0; 256],
-        green: vec![0; 256],
-        blue: vec![0; 256],
-        luma: vec![0; 256],
+    // Two interleaved tables break the store-to-load dependency chain that
+    // smooth gradients create by hitting the same bin on consecutive pixels.
+    let mut t = [[[0u32; 256]; 4]; 2];
+    let mut add = |t: &mut [[u32; 256]; 4], p: &[f32; 3]| {
+        t[0][bin(p[0])] += 1;
+        t[1][bin(p[1])] += 1;
+        t[2][bin(p[2])] += 1;
+        t[3][bin(luma(p))] += 1;
     };
-    for p in pixels {
-        h.red[bin(p[0])] += 1;
-        h.green[bin(p[1])] += 1;
-        h.blue[bin(p[2])] += 1;
-        h.luma[bin(luma(p))] += 1;
+    let mut pairs = pixels.chunks_exact(2);
+    for pair in &mut pairs {
+        add(&mut t[0], &pair[0]);
+        add(&mut t[1], &pair[1]);
     }
-    h
+    for p in pairs.remainder() {
+        add(&mut t[0], p);
+    }
+    let sum = |c: usize| (0..256).map(|i| t[0][c][i] + t[1][c][i]).collect();
+    Histogram {
+        red: sum(0),
+        green: sum(1),
+        blue: sum(2),
+        luma: sum(3),
+    }
 }
 
 #[cfg(test)]

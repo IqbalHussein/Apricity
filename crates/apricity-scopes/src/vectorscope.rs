@@ -1,4 +1,5 @@
-use crate::raster::{alpha_for, reference_count, ScopeImage};
+use crate::raster::{reference_count, AlphaMap, ScopeImage};
+use crate::unit;
 
 /// Scope scale `S`: scope coordinate = `0.5 ± C * S` for chroma `C` in
 /// BT.709 Cb/Cr units. 100 % primaries and secondaries land at radius
@@ -39,19 +40,20 @@ pub fn vectorscope(pixels: &[[f32; 3]], size: u32) -> ScopeImage {
     for p in pixels {
         let (cb, cr) = cbcr(p);
         let (x, y) = to_scope(cb, cr);
-        // NaN falls through clamp unchanged and `as usize` maps it to 0.
-        let xi = (x.clamp(0.0, 1.0) * max).round() as usize;
-        let yi = (y.clamp(0.0, 1.0) * max).round() as usize;
+        // `as usize` maps NaN to 0.
+        let xi = (unit(x) * max).round() as usize;
+        let yi = (unit(y) * max).round() as usize;
         let i = yi * s + xi;
         counts[i] += 1;
         for (acc, v) in sums[i].iter_mut().zip(p) {
-            *acc += v.clamp(0.0, 1.0);
+            *acc += unit(*v);
         }
     }
     let mut img = ScopeImage::empty(size, size);
     let Some(reference) = reference_count(&counts) else {
         return img;
     };
+    let alpha = AlphaMap::new(reference);
     for ((&c, sum), px) in counts.iter().zip(&sums).zip(img.rgba.chunks_exact_mut(4)) {
         if c == 0 {
             continue;
@@ -61,7 +63,7 @@ pub fn vectorscope(pixels: &[[f32; 3]], size: u32) -> ScopeImage {
             let hue = if peak > 1e-6 { s / peak } else { 1.0 };
             *out = (255.0 * (0.75 * hue + 0.25)).round() as u8;
         }
-        px[3] = alpha_for(c, reference);
+        px[3] = alpha.alpha(c);
     }
     img
 }

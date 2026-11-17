@@ -38,3 +38,13 @@ pub(crate) const LUMA: [f32; 3] = [0.2126, 0.7152, 0.0722];
 pub(crate) fn luma(p: &[f32; 3]) -> f32 {
     LUMA[0] * p[0] + LUMA[1] * p[1] + LUMA[2] * p[2]
 }
+
+/// Clamp to `[0, 1]`, mapping NaN to 0 (branch-light, no panics).
+#[inline]
+pub(crate) fn unit(v: f32) -> f32 {
+    if v > 0.0 {
+        v.min(1.0)
+    } else {
+        0.0
+    }
+}

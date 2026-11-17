@@ -1,5 +1,5 @@
-use crate::luma;
-use crate::raster::{alpha_for, reference_count, ScopeImage};
+use crate::raster::{reference_count, AlphaMap, ScopeImage};
+use crate::{luma, unit};
 
 /// Luma trace colour: neutral cyan-white, `sRGB`-encoded 8-bit.
 const LUMA_TRACE: [u8; 3] = [200, 255, 255];
@@ -48,7 +48,7 @@ pub fn rgb_parade(
 
 #[inline]
 fn row_for(v: f32, max_row: usize) -> usize {
-    let v = if v.is_nan() { 0.0 } else { v.clamp(0.0, 1.0) };
+    let v = unit(v);
     ((1.0 - v) * max_row as f32).round() as usize
 }
 
@@ -75,16 +75,16 @@ fn build(
 
     // Column → output bin is hoisted out of the per-pixel loop.
     let col_bin: Vec<usize> = (0..w).map(|c| c * pw / w).collect();
-    let n = w * height as usize;
-    for (i, p) in pixels.iter().take(n).enumerate() {
-        let bin = col_bin[i % w];
-        match mode {
-            Mode::Luma => {
-                counts[row_for(luma(p), max_row) * total_w + bin] += 1;
-            }
-            Mode::Parade => {
-                for (k, &v) in p.iter().enumerate() {
-                    counts[row_for(v, max_row) * total_w + k * pw + bin] += 1;
+    for row in pixels.chunks_exact(w).take(height as usize) {
+        for (p, &bin) in row.iter().zip(&col_bin) {
+            match mode {
+                Mode::Luma => {
+                    counts[row_for(luma(p), max_row) * total_w + bin] += 1;
+                }
+                Mode::Parade => {
+                    for (k, &v) in p.iter().enumerate() {
+                        counts[row_for(v, max_row) * total_w + k * pw + bin] += 1;
+                    }
                 }
             }
         }
@@ -94,6 +94,7 @@ fn build(
     let Some(reference) = reference_count(&counts) else {
         return img;
     };
+    let alpha = AlphaMap::new(reference);
     for (idx, &c) in counts.iter().enumerate() {
         if c == 0 {
             continue;
@@ -104,7 +105,7 @@ fn build(
         };
         let o = idx * 4;
         img.rgba[o..o + 3].copy_from_slice(&tint);
-        img.rgba[o + 3] = alpha_for(c, reference);
+        img.rgba[o + 3] = alpha.alpha(c);
     }
     img
 }
