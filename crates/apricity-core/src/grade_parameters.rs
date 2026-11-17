@@ -66,16 +66,20 @@ impl GradeParameters {
         }
     }
 
-    /// A copy of `self` with both stages bypassed but the input decode
-    /// preserved — the "Original" comparison source.
-    pub fn original(&self) -> Self {
+    /// The "Original" comparison source: both stages bypassed and the
+    /// source shown exactly as encoded (a log source is shown as its flat
+    /// log image, as a colorist expects from "original").
+    pub fn original() -> Self {
         Self {
             schema_version: SCHEMA_VERSION,
             stage1: CorrectionParameters {
-                input_profile: self.stage1.input_profile,
+                enabled: false,
                 ..CorrectionParameters::IDENTITY
             },
-            stage2: CreativeParameters::IDENTITY,
+            stage2: CreativeParameters {
+                enabled: false,
+                ..CreativeParameters::IDENTITY
+            },
         }
     }
 }
@@ -611,8 +615,8 @@ mod tests {
         let s1 = p.stage1_only();
         assert_eq!(s1.stage1.exposure, 1.0);
         assert_eq!(s1.stage2, CreativeParameters::IDENTITY);
-        let orig = p.original();
-        assert_eq!(orig.stage1.exposure, 0.0);
-        assert_eq!(orig.stage1.input_profile, LogProfile::AppleLog);
+        let orig = GradeParameters::original();
+        assert!(!orig.stage1.enabled && !orig.stage2.enabled);
+        assert_eq!(orig.stage1.input_profile, LogProfile::None);
     }
 }
