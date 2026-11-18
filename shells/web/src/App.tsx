@@ -1,26 +1,40 @@
-import { createSignal, onMount } from "solid-js";
-import { identityParams, initCore, version } from "./core/wasm";
+import { createSignal, onMount, Show } from "solid-js";
+import type { JSX } from "solid-js";
+import { Shell } from "./components/Shell";
+import { initCore } from "./core/wasm";
+import { initGrade } from "./state/grade";
+import "./styles/app.css";
 
 /**
- * Smoke shell: loads the WASM core and shows its version and the identity
- * grade. The editor UI lands in M6.
+ * Application root: loads the Rust core (WASM), seeds the stores from it and
+ * renders the shell once ready.
  */
-export function App() {
-  const [coreVersion, setCoreVersion] = createSignal<string | null>(null);
-  const [identity, setIdentity] = createSignal<string | null>(null);
+export function App(): JSX.Element {
+  const [ready, setReady] = createSignal(false);
+  const [failure, setFailure] = createSignal<string | null>(null);
 
   onMount(async () => {
-    await initCore();
-    setCoreVersion(version());
-    setIdentity(JSON.stringify(identityParams(), null, 2));
+    try {
+      await initCore();
+      initGrade();
+      setReady(true);
+    } catch (e) {
+      setFailure(e instanceof Error ? e.message : String(e));
+    }
   });
 
   return (
-    <main style={{ "font-family": "system-ui", padding: "2rem" }}>
-      <h1>Apricity</h1>
-      <p>Cross-platform color grading. Core smoke page.</p>
-      <pre>core: {coreVersion() ?? "loading…"}</pre>
-      <pre>identity grade: {identity() ?? "loading…"}</pre>
-    </main>
+    <Show
+      when={ready()}
+      fallback={
+        <div class="boot" role={failure() ? "alert" : "status"}>
+          {failure()
+            ? `Apricity could not start the color engine. ${failure()}`
+            : "Loading the color engine"}
+        </div>
+      }
+    >
+      <Shell />
+    </Show>
   );
 }
