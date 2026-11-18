@@ -37,6 +37,7 @@ const [flash, setFlash] = createSignal<{ path: string; token: number } | null>(n
 const [mobile, setMobile] = createSignal(false);
 const [sheetHeight, setSheetHeight] = createSignal(0);
 const [stage1Open, setStage1Open] = createSignal(true);
+const [scopesOpen, setScopesOpen] = createSignal(true);
 let targetToken = 0;
 
 /** Reactive UI state shared by components; no pipeline data lives here. */
@@ -117,6 +118,9 @@ export const ui = {
   /** Whether the Correction panel is expanded. */
   stage1Open,
   setStage1Open,
+  /** Whether the scopes dock in the Grade inspector is expanded. */
+  scopesOpen,
+  setScopesOpen,
   /** Mobile bottom-sheet height in CSS pixels; 0 means "default". */
   sheetHeight,
   setSheetHeight,

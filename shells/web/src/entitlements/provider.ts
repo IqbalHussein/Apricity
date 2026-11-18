@@ -43,3 +43,14 @@ export class LocalBetaProvider implements EntitlementProvider {
     return limitsFor(this.tier());
   }
 }
+
+/**
+ * Whether the beta unlock applies to this page load. `?beta=0` previews the
+ * Free tier (a stricter state, so it grants nothing); anything else keeps {@link BETA_ALL_PRO}.
+ *
+ * @param search - `location.search`.
+ * @returns `true` when every feature is unlocked.
+ */
+export function betaFromSearch(search: string): boolean {
+  return new URLSearchParams(search).get("beta") === "0" ? false : BETA_ALL_PRO;
+}

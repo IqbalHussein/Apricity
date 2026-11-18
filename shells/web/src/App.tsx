@@ -3,6 +3,7 @@ import type { JSX } from "solid-js";
 import { Shell } from "./components/Shell";
 import { initCore } from "./core/wasm";
 import { initGrade } from "./state/grade";
+import { initPersistence } from "./storage/init";
 import "./styles/app.css";
 
 /**
@@ -17,6 +18,7 @@ export function App(): JSX.Element {
     try {
       await initCore();
       initGrade();
+      await initPersistence();
       setReady(true);
     } catch (e) {
       setFailure(e instanceof Error ? e.message : String(e));

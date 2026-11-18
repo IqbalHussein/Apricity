@@ -3,6 +3,7 @@ import type { JSX } from "solid-js";
 import { graticule } from "../core/wasm";
 import type { Histogram, LegalReport, ScopeRaster } from "../core/wasm";
 import { requestScopes, scopeData } from "../engine/bridge";
+import { entitlements } from "../entitlements/store";
 import type { ScopeTab } from "../state/ui";
 import { ui } from "../state/ui";
 import { Segmented } from "./Segmented";
@@ -217,7 +218,9 @@ function LegalBadge(props: { legal: LegalReport | undefined }): JSX.Element {
  * @param props.histogramOnly - Show only the histogram, without tabs (Quick mode).
  */
 export function ScopesPanel(props: { histogramOnly?: boolean }): JSX.Element {
-  const tab = (): ScopeTab => (props.histogramOnly ? "histogram" : ui.scopeTab());
+  const allowed = (t: ScopeTab): boolean => entitlements.gate(`scope:${t}`).allowed;
+  const tab = (): ScopeTab =>
+    props.histogramOnly ? "histogram" : allowed(ui.scopeTab()) ? ui.scopeTab() : "histogram";
   const kinds = createMemo(() => (props.histogramOnly ? ["histogram"] : [tab(), "legal"]));
   createEffect(() => {
     const dispose = requestScopes(kinds());
@@ -235,9 +238,14 @@ export function ScopesPanel(props: { histogramOnly?: boolean }): JSX.Element {
         <Segmented<ScopeTab>
           class="scope-tabs"
           label="Scope type"
-          value={ui.scopeTab()}
+          value={tab()}
           onChange={ui.setScopeTab}
-          options={TABS.map((t) => ({ value: t.value, label: t.label }))}
+          options={TABS.map((t) => ({
+            value: t.value,
+            label: t.label,
+            disabled: !allowed(t.value),
+            title: allowed(t.value) ? undefined : "Free includes the histogram. The other scopes need Pro.",
+          }))}
         />
       </Show>
       <div class="scope-area">

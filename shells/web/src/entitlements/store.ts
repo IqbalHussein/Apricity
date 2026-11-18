@@ -5,12 +5,14 @@ import type { UsageRecord } from "../storage/idb";
 import { BETA_NOTICE, evaluate } from "./gating";
 import type { Feature, GateContext, GateResult } from "./gating";
 import { FREE_LIMITS } from "./limits";
-import { LocalBetaProvider } from "./provider";
+import { betaFromSearch, LocalBetaProvider } from "./provider";
 import type { EntitlementProvider } from "./provider";
 import { monthKey, UsageCounter } from "./usage";
 import type { UsageKind } from "./usage";
 
-const [provider, setProviderSignal] = createSignal<EntitlementProvider>(new LocalBetaProvider());
+const [provider, setProviderSignal] = createSignal<EntitlementProvider>(
+  new LocalBetaProvider(betaFromSearch(typeof location === "undefined" ? "" : location.search)),
+);
 const [record, setRecord] = createSignal<UsageRecord | undefined>(undefined);
 const [notice, setNotice] = createSignal<string | null>(null);
 

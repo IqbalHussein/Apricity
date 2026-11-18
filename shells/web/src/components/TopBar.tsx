@@ -7,7 +7,12 @@ import { history } from "../state/history";
 import { currentSource, openImageFile } from "../state/project";
 import type { Mode } from "../state/ui";
 import { ui } from "../state/ui";
-import { OpenIcon, RedoIcon, ThemeIcon, UndoIcon } from "./Icons";
+import { toggleAb } from "../state/ab";
+import { setRecipeLibraryOpen } from "../state/recipes";
+import { AbToggle } from "./AbToggle";
+import { setExportDialogOpen } from "./ExportDialog";
+import { BookmarkIcon, GridIcon, OpenIcon, RedoIcon, ThemeIcon, UndoIcon } from "./Icons";
+import { openSaveRecipe } from "./Recipes";
 import { Segmented } from "./Segmented";
 
 const MODES: { value: Mode; label: string }[] = [
@@ -77,14 +82,21 @@ const THEME_NEXT = { system: "light", light: "dark", dark: "system" } as const;
 
 /**
  * Top bar: wordmark with its Planckian strip, mode switch (desktop), undo and
- * redo, the A/B slot, theme toggle and a disabled Export placeholder.
+ * redo, the A/B toggle, recipe save and library, theme toggle and Export.
  */
 export function TopBar(): JSX.Element {
   const onKey = (e: KeyboardEvent): void => {
     const mod = e.ctrlKey || e.metaKey;
-    if (!mod || e.key.toLowerCase() !== "z") return;
     const t = e.target as HTMLElement | null;
-    if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+    const typing =
+      t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT" || t.isContentEditable);
+    if (e.key === "\\" && !mod && !e.altKey && !typing && !document.querySelector("dialog[open]")) {
+      e.preventDefault();
+      toggleAb();
+      return;
+    }
+    if (!mod || e.key.toLowerCase() !== "z") return;
+    if (typing) return;
     e.preventDefault();
     if (e.shiftKey) redo();
     else undo();
@@ -126,10 +138,31 @@ export function TopBar(): JSX.Element {
         >
           <RedoIcon />
         </button>
-        <div class="ab-slot" data-slot="ab" />
+        <AbToggle />
         <button
           type="button"
           class="icon-btn"
+          data-testid="save-recipe"
+          aria-label="Save recipe"
+          title="Save recipe"
+          disabled={currentSource() === null}
+          onClick={() => openSaveRecipe()}
+        >
+          <BookmarkIcon />
+        </button>
+        <button
+          type="button"
+          class="icon-btn"
+          data-testid="recipe-library-open"
+          aria-label="Recipe library"
+          title="Recipe library"
+          onClick={() => setRecipeLibraryOpen(true)}
+        >
+          <GridIcon />
+        </button>
+        <button
+          type="button"
+          class="icon-btn tb-open"
           aria-label="Open file"
           title="Open file"
           onClick={() => pickImage((f) => void openImageFile(f))}
@@ -140,14 +173,20 @@ export function TopBar(): JSX.Element {
         </button>
         <button
           type="button"
-          class="icon-btn"
+          class="icon-btn tb-theme"
           aria-label={`Theme: ${ui.theme()}. Switch to ${THEME_NEXT[ui.theme()]}`}
           title={`Theme: ${ui.theme()}`}
           onClick={() => ui.setTheme(THEME_NEXT[ui.theme()])}
         >
           <ThemeIcon />
         </button>
-        <button type="button" class="btn btn-export" disabled title="Export is not available yet">
+        <button
+          type="button"
+          class="btn btn-export"
+          data-testid="export-open"
+          disabled={currentSource() === null}
+          onClick={() => setExportDialogOpen(true)}
+        >
           Export
         </button>
       </div>

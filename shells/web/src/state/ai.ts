@@ -1,6 +1,7 @@
 import { createSignal } from "solid-js";
 import { ngaApply, ngaSurprise } from "../core/wasm";
 import type { NgaResult, PromptMode } from "../core/wasm";
+import { entitlements } from "../entitlements/store";
 import { markAi } from "./aimarks";
 import { getRng } from "./clock";
 import type { Rng } from "./clock";
@@ -11,8 +12,8 @@ import { ui } from "./ui";
 export const PROMPT_HISTORY_MAX = 20;
 
 /**
- * Persistence seam for prompt history. M6a keeps history in memory; a later
- * milestone plugs IndexedDB in here (ADR-0010).
+ * Persistence seam for prompt history; {@link attachPromptStore} plugs the
+ * IndexedDB store in (ADR-0010).
  */
 export interface PromptHistoryStore {
   /** @returns Saved prompts, newest first. */
@@ -75,11 +76,21 @@ export class PromptHistory {
   }
 }
 
-const history = new PromptHistory();
+let history = new PromptHistory();
 const [prompts, setPrompts] = createSignal<readonly string[]>([]);
 const [lastResult, setLastResult] = createSignal<NgaResult | null>(null);
 const [lastPrompt, setLastPrompt] = createSignal<string | null>(null);
 const [error, setError] = createSignal<string | null>(null);
+
+/**
+ * Persist prompt history through `store` and load what was saved earlier.
+ *
+ * @param store - Storage seam; a failing store leaves the in-memory history in use.
+ */
+export async function attachPromptStore(store: PromptHistoryStore): Promise<void> {
+  history = new PromptHistory(PROMPT_HISTORY_MAX, store);
+  setPrompts(await history.hydrate());
+}
 
 /** Prompt history, newest first (tracked). */
 export const promptHistory = prompts;
@@ -103,10 +114,16 @@ export function runPrompt(prompt: string, mode: PromptMode): NgaResult | null {
     setError("Describe the look you want first.");
     return null;
   }
+  const gate = entitlements.gate("prompt");
+  if (!gate.allowed) {
+    setError(gate.reason);
+    return null;
+  }
   try {
     const result = ngaApply(text, gradeParams(), mode);
     finish(result, text);
     setPrompts(history.add(text));
+    entitlements.record("prompts");
     return result;
   } catch (e) {
     setError(e instanceof Error ? e.message : String(e));

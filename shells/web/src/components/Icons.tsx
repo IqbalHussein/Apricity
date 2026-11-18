@@ -98,3 +98,36 @@ export const OpenIcon = (p: IconProps): JSX.Element => (
     <path d="M2 12.5V4.5a1 1 0 0 1 1-1h3l1.5 1.5H13a1 1 0 0 1 1 1v6.5a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1Z" />
   </Svg>
 );
+/** Bookmark (save recipe). */
+export const BookmarkIcon = (p: IconProps): JSX.Element => (
+  <Svg {...p}>
+    <path d="M4 2.5h8v11L8 10.5 4 13.5v-11Z" />
+  </Svg>
+);
+/** Four-square grid (recipe library). */
+export const GridIcon = (p: IconProps): JSX.Element => (
+  <Svg {...p}>
+    <rect x="2.5" y="2.5" width="4.5" height="4.5" rx="1" />
+    <rect x="9" y="2.5" width="4.5" height="4.5" rx="1" />
+    <rect x="2.5" y="9" width="4.5" height="4.5" rx="1" />
+    <rect x="9" y="9" width="4.5" height="4.5" rx="1" />
+  </Svg>
+);
+/** Trash can (delete). */
+export const TrashIcon = (p: IconProps): JSX.Element => (
+  <Svg {...p}>
+    <path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.6 8.5h5.8l.6-8.5" />
+  </Svg>
+);
+/** Pencil (rename). */
+export const PencilIcon = (p: IconProps): JSX.Element => (
+  <Svg {...p}>
+    <path d="m3 13 .6-2.8L10.8 3a1.4 1.4 0 0 1 2 2l-7.2 7.2L3 13Z" />
+  </Svg>
+);
+/** Arrow into a tray (download or export). */
+export const DownloadIcon = (p: IconProps): JSX.Element => (
+  <Svg {...p}>
+    <path d="M8 2.5v8M4.5 7 8 10.5 11.5 7M3 13.5h10" />
+  </Svg>
+);

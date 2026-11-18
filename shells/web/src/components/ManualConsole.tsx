@@ -1,5 +1,6 @@
 import { createEffect, createMemo, createSignal, For, on, Show } from "solid-js";
 import type { JSX } from "solid-js";
+import { entitlements } from "../entitlements/store";
 import { sentenceCase } from "../lib/format";
 import { getSpecs } from "../state/specs";
 import { ui } from "../state/ui";
@@ -7,12 +8,14 @@ import { ColorWheel } from "./ColorWheel";
 import { CurveEditor, showCurveChannel } from "./CurveEditor";
 import { ChevronIcon } from "./Icons";
 import { HslPanel, showHslBand } from "./HslPanel";
+import { LutSection } from "./LutSection";
+import { UpgradeNotice } from "./UpgradeNotice";
 import { SliderRow } from "./Slider";
 
 /** Console sections in display order; each is a spec `group` or the virtual "Curves". */
-const ORDER = ["Light", "Color", "Wheels", "HSL", "Curves", "Split Tone", "Effects"] as const;
-/** Spec groups that never appear in the Manual Console. */
-const HIDDEN = new Set(["Correction", "LUT"]);
+const ORDER = ["Light", "Color", "Wheels", "HSL", "Curves", "Split Tone", "Effects", "LUT"] as const;
+/** Spec groups that never appear in the Manual Console as slider lists. */
+const HIDDEN = new Set(["Correction"]);
 
 function groupOf(path: string): string {
   if (path.startsWith("stage2.tone_curve")) return "Curves";
@@ -45,7 +48,11 @@ export function ManualConsole(): JSX.Element {
     for (const g of present) if (!list.includes(g)) list.push(g);
     return list;
   });
-  const [closed, setClosed] = createSignal<ReadonlySet<string>>(new Set(["Split Tone", "Effects"]));
+  const [closed, setClosed] = createSignal<ReadonlySet<string>>(
+    new Set(["Split Tone", "Effects", "LUT"]),
+  );
+  /** Sections beyond Free's basic sliders are replaced by a notice; the LUT section has its own gate. */
+  const locked = (g: string): boolean => g !== "LUT" && !entitlements.gate(`console:${g}`).allowed;
   const toggle = (g: string): void => {
     setClosed((c) => (c.has(g) ? new Set([...c].filter((x) => x !== g)) : new Set([...c, g])));
   };
@@ -97,20 +104,26 @@ export function ManualConsole(): JSX.Element {
             </h3>
             <Show when={!closed().has(g)}>
               <div class="section-body">
-                <Show when={g === "Wheels"}>
+                <Show when={locked(g)}>
+                  <UpgradeNotice feature={`console:${g}`} />
+                </Show>
+                <Show when={!locked(g) && g === "LUT"}>
+                  <LutSection />
+                </Show>
+                <Show when={!locked(g) && g === "Wheels"}>
                   <div class="wheels">
                     <ColorWheel name="lift" title="Lift" />
                     <ColorWheel name="gamma" title="Gamma" />
                     <ColorWheel name="gain" title="Gain" />
                   </div>
                 </Show>
-                <Show when={g === "HSL"}>
+                <Show when={!locked(g) && g === "HSL"}>
                   <HslPanel />
                 </Show>
-                <Show when={g === "Curves"}>
+                <Show when={!locked(g) && g === "Curves"}>
                   <CurveEditor />
                 </Show>
-                <Show when={g !== "Wheels" && g !== "HSL" && g !== "Curves"}>
+                <Show when={!locked(g) && g !== "Wheels" && g !== "HSL" && g !== "Curves" && g !== "LUT"}>
                   <For each={specs.scalars.filter((s) => s.stage === "creative" && s.group === g)}>
                     {(s) => <SliderRow spec={s} />}
                   </For>

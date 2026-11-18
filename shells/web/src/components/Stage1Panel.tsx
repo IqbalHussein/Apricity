@@ -90,6 +90,21 @@ export function Stage1Panel(): JSX.Element {
       ? "Detected: light source unclear"
       : `Detected: ${ILLUMINANT[a.illuminant]}, ≈${k} K`;
   };
+  /** One-line state shown instead of the controls while Correction is folded. */
+  const summary = (): string | null => {
+    const a = stage1Analysis();
+    if (!a) return null;
+    const on = GROUPS.filter((g) => flag(g.flag)).length;
+    const mode = on === GROUPS.length ? "auto" : on === 0 ? "manual" : "partly auto";
+    const light =
+      a.illuminant === "unknown"
+        ? "light unclear"
+        : `${ILLUMINANT[a.illuminant]} ≈${Math.round(a.estimated_kelvin / 100) * 100} K`;
+    const ev = getPath(gradeParams(), "stage1.exposure");
+    const stops = typeof ev === "number" ? ev : 0;
+    const sign = stops < 0 ? "−" : "+";
+    return `${mode} · ${light} · ${sign}${Math.abs(stops).toFixed(2)} EV`;
+  };
   return (
     <section class="stage1" aria-labelledby="stage1-title">
       <h2 class="stage-title" id="stage1-title">
@@ -102,7 +117,12 @@ export function Stage1Panel(): JSX.Element {
           <span class="chev" classList={{ open: ui.stage1Open() }}>
             <ChevronIcon size={12} />
           </span>
-          Correction
+          <span class="stage-name">Correction</span>
+          <Show when={!ui.stage1Open() && summary()}>
+            <span class="stage-summary" data-testid="stage1-summary">
+              : {summary()}
+            </span>
+          </Show>
         </button>
       </h2>
       <div class="s1-body" hidden={!ui.stage1Open()}>

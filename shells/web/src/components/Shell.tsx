@@ -3,12 +3,16 @@ import type { JSX } from "solid-js";
 import { currentSource } from "../state/project";
 import { ui } from "../state/ui";
 import { ExplainabilityPanel } from "./ExplainabilityPanel";
+import { ExportDialog, exportDialogOpen } from "./ExportDialog";
 import { Inspector } from "./Inspector";
 import { NgaPromptBar } from "./NgaPromptBar";
+import { Onboarding } from "./Onboarding";
 import { PreviewCanvas } from "./PreviewCanvas";
+import { RecipeDialogs, RecipeStrip } from "./Recipes";
 import { ReviewToolbar } from "./ReviewToolbar";
 import { ScopesPanel } from "./ScopesPanel";
 import { ModeSwitch, TopBar } from "./TopBar";
+import { NoticeHost } from "./UpgradeNotice";
 
 /** Viewport width at which the desktop two-column layout starts, in CSS pixels. */
 export const DESKTOP_MIN_WIDTH = 1024;
@@ -48,6 +52,7 @@ export function Shell(): JSX.Element {
       <TopBar />
       <main class="main">
         <PreviewCanvas />
+        <Onboarding />
         <Show when={mode() === "quick"}>
           <div class="quick-hist">
             <ScopesPanel histogramOnly />
@@ -58,6 +63,9 @@ export function Shell(): JSX.Element {
         </Show>
         <Show when={mode() !== "review"}>
           <div class="dock">
+            <Show when={mode() === "quick"}>
+              <RecipeStrip />
+            </Show>
             <NgaPromptBar />
             <ExplainabilityPanel />
           </div>
@@ -107,6 +115,11 @@ export function Shell(): JSX.Element {
       <Show when={ui.mobile()}>
         <ModeSwitch variant="tabs" />
       </Show>
+      <RecipeDialogs />
+      <Show when={exportDialogOpen()}>
+        <ExportDialog />
+      </Show>
+      <NoticeHost />
     </div>
   );
 }

@@ -12,6 +12,7 @@ import type { BackendKind, ScopesResult } from "../core/wasm";
 import { getClock } from "../state/clock";
 import { applyAnalysis, gradeParams } from "../state/grade";
 import { history } from "../state/history";
+import { activeLut } from "../state/lut";
 import { currentReference, currentSource, setStage1Analysis } from "../state/project";
 import { ui } from "../state/ui";
 
@@ -213,6 +214,14 @@ function installEffects(): void {
   createEffect(() => {
     const p = gradeParams();
     safe("params", () => engine?.setParams(p));
+    dirty = true;
+    scopesDirty = true;
+  });
+
+  const lutText = createMemo(() => activeLut()?.text ?? null);
+  createEffect(() => {
+    const text = lutText();
+    safe("lut", () => engine?.setLut(text));
     dirty = true;
     scopesDirty = true;
   });

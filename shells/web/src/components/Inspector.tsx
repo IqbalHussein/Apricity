@@ -1,5 +1,7 @@
 import { createSignal, Show } from "solid-js";
 import type { JSX } from "solid-js";
+import { ui } from "../state/ui";
+import { ChevronIcon } from "./Icons";
 import { ManualConsole } from "./ManualConsole";
 import { ScopesPanel } from "./ScopesPanel";
 import { Segmented } from "./Segmented";
@@ -37,8 +39,24 @@ export function Inspector(props: { mobile: boolean }): JSX.Element {
         </div>
       </Show>
       <Show when={!props.mobile || pane() === "scopes"}>
-        <div class="inspector-scopes">
-          <ScopesPanel />
+        <div class="inspector-scopes" classList={{ collapsed: !props.mobile && !ui.scopesOpen() }}>
+          <Show when={!props.mobile}>
+            <button
+              type="button"
+              class="section-toggle scopes-toggle"
+              data-testid="scopes-toggle"
+              aria-expanded={ui.scopesOpen()}
+              onClick={() => ui.setScopesOpen(!ui.scopesOpen())}
+            >
+              <span class="chev" classList={{ open: ui.scopesOpen() }}>
+                <ChevronIcon size={12} />
+              </span>
+              Scopes
+            </button>
+          </Show>
+          <Show when={props.mobile || ui.scopesOpen()}>
+            <ScopesPanel />
+          </Show>
         </div>
       </Show>
     </div>

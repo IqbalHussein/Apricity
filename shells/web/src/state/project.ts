@@ -3,12 +3,25 @@ import type { Stage1Analysis } from "../core/wasm";
 import { decodeToProxy } from "../lib/imageProxy";
 import type { ImageProxy } from "../lib/imageProxy";
 import { generateSampleImage } from "../lib/sampleImage";
+import { entitlements, requireFeature } from "../entitlements/store";
 import { resetAi } from "./ai";
+import { resetAb } from "./ab";
 import { resetForNewSource } from "./grade";
 import { ui } from "./ui";
 
+/** What kind of media a {@link Source} holds. Only images exist until M7 adds video. */
+export type SourceKind = "image" | "video";
+
 /** The image being graded. */
 export interface Source {
+  /** Media kind; export UI sections are chosen by it. */
+  kind: SourceKind;
+  /**
+   * The original file, kept so export can decode full resolution on demand
+   * (no full-resolution pixels are held between exports). `null` for the
+   * generated sample, whose proxy is already its full resolution.
+   */
+  file: File | null;
   /** Increments for every opened image so effects can detect a new one. */
   id: number;
   /** Display name (file name). */
@@ -51,6 +64,8 @@ export const importError = loadError;
  * @param a - Analysis, or `null` to clear.
  */
 export function setStage1Analysis(a: Stage1Analysis | null): void {
+  // The first analysis of an image folds Correction into its summary line.
+  if (a && analysis() === null) ui.setStage1Open(false);
   setAnalysis(a);
 }
 
@@ -60,8 +75,9 @@ export function setStage1Analysis(a: Stage1Analysis | null): void {
  *
  * @param proxy - Decoded preview proxy.
  * @param name - Display name.
+ * @param file - Original file for full-resolution export; `null` when the proxy is the full image.
  */
-export function openProxy(proxy: ImageProxy, name: string): void {
+export function openProxy(proxy: ImageProxy, name: string, file: File | null = null): void {
   nextId += 1;
   resetForNewSource();
   resetAi();
@@ -69,8 +85,9 @@ export function openProxy(proxy: ImageProxy, name: string): void {
   setReference(null);
   if (ui.compareSource() === "reference") ui.setCompareSource("original");
   ui.setView({ zoom: 1, pan: [0, 0] });
+  resetAb();
   setLoadError(null);
-  setSource({ id: nextId, name, proxy });
+  setSource({ id: nextId, kind: "image", file, name, proxy });
 }
 
 /**
@@ -80,9 +97,11 @@ export function openProxy(proxy: ImageProxy, name: string): void {
  * @returns `true` on success; on failure {@link importError} holds the copy.
  */
 export async function openImageFile(file: File): Promise<boolean> {
+  if (!requireFeature("import")) return false;
   setLoading(true);
   try {
-    openProxy(await decodeToProxy(file), file.name);
+    openProxy(await decodeToProxy(file), file.name, file);
+    entitlements.record("imports");
     return true;
   } catch (e) {
     setLoadError(e instanceof Error ? e.message : String(e));

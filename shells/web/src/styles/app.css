@@ -1361,7 +1361,22 @@ ul {
 }
 
 .app.mobile .btn-export {
+  margin-left: 2px;
+  height: 32px;
+  padding: 0 10px;
+}
+
+.app.mobile .topbar-actions {
+  gap: 0;
+}
+
+.app.mobile .wordmark-strip,
+.app.mobile .ab-copy {
   display: none;
+}
+
+.app.mobile .icon-btn {
+  width: 30px;
 }
 
 .app.mobile .side {
@@ -1471,4 +1486,557 @@ ul {
   .scope-area {
     height: 160px;
   }
+}
+
+
+/* ---------- M6b: dialogs ---------- */
+
+.dialog {
+  width: min(440px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  padding: 0;
+  overflow: auto;
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-sheet);
+  text-align: left;
+}
+
+.dialog-wide {
+  width: min(760px, calc(100vw - 32px));
+}
+
+.dialog::backdrop {
+  background: rgb(0 0 0 / 0.55);
+}
+
+.dialog-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 12px 4px 16px;
+}
+
+.dialog-title {
+  font-size: 16px;
+  font-weight: 600;
+  font-stretch: 100%;
+}
+
+.dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 8px 16px 16px;
+}
+
+.dialog-form,
+.export-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dialog-note {
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+.field-label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.field-value {
+  font-weight: 450;
+  color: var(--text-dim);
+  margin-left: 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+.text-input {
+  width: 100%;
+  height: 36px;
+  padding: 0 10px;
+  background: var(--raised);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-control);
+  font-size: 16px;
+}
+
+.range {
+  width: 100%;
+  accent-color: var(--text);
+}
+
+.export-tabs {
+  align-self: flex-start;
+}
+
+.export-progress,
+.export-done {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  border: 2px solid var(--rule);
+  border-top-color: var(--text);
+  border-radius: 50%;
+  animation: spin 800ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.btn-small {
+  height: 28px;
+  padding: 0 10px;
+  font-size: 13px;
+}
+
+.btn-danger {
+  border-color: var(--warn);
+}
+
+/* ---------- M6b: notices ---------- */
+
+.upgrade-notice,
+.notice-toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+.upgrade-notice svg,
+.notice-toast svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--info);
+}
+
+.notice-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 72px;
+  z-index: 40;
+  transform: translateX(-50%);
+  align-items: center;
+  max-width: min(520px, calc(100vw - 32px));
+  padding: 6px 6px 6px 12px;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-control);
+}
+
+.notice-toast svg {
+  margin-top: 0;
+}
+
+/* ---------- M6b: A/B ---------- */
+
+.ab-slot {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.ab-toggle {
+  display: inline-flex;
+  padding: 2px;
+  gap: 2px;
+  background: var(--raised);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-control);
+}
+
+.ab-cell {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 24px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-dim);
+}
+
+.ab-cell.on {
+  background: var(--text);
+  color: var(--panel);
+}
+
+.ab-copy {
+  margin: 0;
+  padding: 0 8px;
+}
+
+/* ---------- M6b: recipes ---------- */
+
+.lib-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.lib-count {
+  margin-left: auto;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+.lib-heading {
+  font-size: 13px;
+  font-weight: 600;
+  font-stretch: 100%;
+  margin-top: 4px;
+}
+
+.recipe-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.recipe-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.recipe-apply {
+  display: block;
+  padding: 0;
+  background: var(--surround);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-control);
+  overflow: hidden;
+  aspect-ratio: 3 / 2;
+}
+
+.recipe-apply:hover:not(:disabled) {
+  border-color: var(--text-dim);
+}
+
+.thumb {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.thumb-empty {
+  background: var(--raised);
+}
+
+.recipe-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  min-height: 32px;
+}
+
+.recipe-name {
+  font-size: 13px;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.recipe-tools {
+  display: flex;
+  flex: none;
+}
+
+.recipe-tools .icon-btn {
+  width: 28px;
+  height: 28px;
+}
+
+.recipe-rename {
+  height: 28px;
+  font-size: 13px;
+}
+
+.recipe-confirm {
+  display: flex;
+  gap: 4px;
+  flex: none;
+}
+
+.recipe-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px 0;
+  min-width: 0;
+}
+
+.strip-list {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding-bottom: 4px;
+}
+
+.strip-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 84px;
+  padding: 0;
+  background: none;
+  border: 0;
+  text-align: left;
+}
+
+.strip-item .thumb,
+.strip-item .thumb-empty {
+  width: 84px;
+  height: 56px;
+  border: 1px solid var(--rule);
+  border-radius: var(--r-control);
+}
+
+.strip-item:hover .thumb {
+  border-color: var(--text-dim);
+}
+
+.strip-name {
+  font-size: 12px;
+  font-stretch: 75%;
+  font-weight: 450;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.strip-more {
+  flex: none;
+  margin: 0;
+  align-self: flex-start;
+}
+
+/* ---------- M6b: LUT ---------- */
+
+.lut-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lut-active {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.lut-title {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lut-size {
+  color: var(--text-dim);
+  flex: none;
+}
+
+.lut-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ---------- M6b: onboarding ---------- */
+
+.onboarding {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 6;
+  width: min(340px, calc(100% - 24px));
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px 12px;
+  background: var(--panel-sheet);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-sheet);
+  text-align: left;
+}
+
+.onb-step {
+  font-size: 12px;
+  font-stretch: 75%;
+  color: var(--text-dim);
+}
+
+.onb-title {
+  font-size: 16px;
+  font-weight: 600;
+  font-stretch: 100%;
+}
+
+.onb-body {
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+.onb-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.onb-pair figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.onb-pair figcaption {
+  font-size: 12px;
+  font-stretch: 75%;
+  color: var(--text-dim);
+}
+
+.onb-img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  border: 1px solid var(--rule);
+  border-radius: var(--r-control);
+}
+
+.onb-img-empty {
+  background: var(--raised);
+}
+
+.onb-prompt {
+  padding: 6px 10px;
+  font-size: 13px;
+  background: var(--raised);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-control);
+}
+
+.onb-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.onb-spacer {
+  flex: 1;
+}
+
+/* ---------- M6b: inspector crowding ---------- */
+
+.stage-toggle {
+  min-width: 0;
+}
+
+.stage-name {
+  flex: none;
+}
+
+.stage-summary {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 450;
+  color: var(--text-dim);
+  margin-left: -6px;
+}
+
+.scopes-toggle {
+  min-height: 28px;
+  margin-bottom: 4px;
+}
+
+.inspector-scopes.collapsed {
+  padding-bottom: 4px;
+}
+
+.inspector-scopes.collapsed .scopes-toggle {
+  margin-bottom: 0;
+}
+
+.stage1:has(.s1-body[hidden]) .stage-title {
+  margin-bottom: 0;
+}
+
+.stage1:has(.s1-body[hidden]) + .stage-divider {
+  margin-top: 8px;
+}
+
+/* Grade mode leaves the top bar 664 px at 1024 px wide: drop the secondary controls so Export stays visible. */
+@media (max-width: 1279px) {
+  .app.mode-grade:not(.mobile) .topbar {
+    gap: 8px;
+  }
+
+  .app.mode-grade:not(.mobile) .ab-copy {
+    display: none;
+  }
+
+  .app.mode-grade:not(.mobile) .mode-switch .segment {
+    padding: 0 8px;
+  }
+}
+
+@media (max-width: 1279px) {
+  .app.mode-grade:not(.mobile) .tb-open,
+  .app.mode-grade:not(.mobile) .tb-theme {
+    display: none;
+  }
+
+  .app.mode-grade:not(.mobile) .topbar-mode {
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+}
+
+.app.mobile .tb-theme {
+  display: none;
 }
