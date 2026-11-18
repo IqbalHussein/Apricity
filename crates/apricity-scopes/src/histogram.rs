@@ -7,6 +7,7 @@ use crate::{luma, unit};
 /// Bin `i` covers `[i/256, (i+1)/256)`; the last bin also holds 1.0. Values
 /// outside `[0, 1]` (and NaN, as 0) are clamped into the end bins. Every
 /// vector sums to the pixel count.
+#[cfg_attr(feature = "tsify", derive(tsify_next::Tsify))]
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct Histogram {
     /// Red `R'` counts.

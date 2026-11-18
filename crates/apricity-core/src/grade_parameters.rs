@@ -31,6 +31,7 @@ use serde::{Deserialize, Serialize};
 pub const SCHEMA_VERSION: u32 = 1;
 
 /// The complete two-stage grade for one image or clip.
+#[cfg_attr(feature = "tsify", derive(tsify_next::Tsify))]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(default)]
 pub struct GradeParameters {
@@ -86,6 +87,7 @@ impl GradeParameters {
 
 /// Camera log encoding of the source, decoded in Stage 1 to scene-linear
 /// Rec.2020. `None` means a display-referred sRGB source (JPEG/PNG/WebP).
+#[cfg_attr(feature = "tsify", derive(tsify_next::Tsify))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Default)]
 #[serde(rename_all = "snake_case")]
 pub enum LogProfile {
@@ -126,6 +128,7 @@ impl LogProfile {
 
 /// An RGB triple. Unit and color space are documented on each field that
 /// uses it.
+#[cfg_attr(feature = "tsify", derive(tsify_next::Tsify))]
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct Rgb {
@@ -149,6 +152,7 @@ impl Rgb {
 /// Stage 1 — technical correction. Establishes a neutral, calibrated
 /// baseline before the creative grade. Non-destructive: these values are
 /// metadata applied at render time.
+#[cfg_attr(feature = "tsify", derive(tsify_next::Tsify))]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(default)]
 pub struct CorrectionParameters {
@@ -210,6 +214,7 @@ impl CorrectionParameters {
 /// A three-way color wheel (lift, gamma, or gain). Each channel is a
 /// **normalized offset** in the working encoding; `master` is added to all
 /// three channels. Zero everywhere is identity.
+#[cfg_attr(feature = "tsify", derive(tsify_next::Tsify))]
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ColorWheel {
@@ -243,6 +248,7 @@ impl ColorWheel {
 }
 
 /// Hue/saturation/luminance adjustment for one hue band.
+#[cfg_attr(feature = "tsify", derive(tsify_next::Tsify))]
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct HslBand {
@@ -269,6 +275,7 @@ impl HslBand {
 /// makes this a hue-vs-hue / hue-vs-sat / hue-vs-lum curve with eight fixed
 /// knots. Band centers (degrees, HSV hue of the working-encoded signal) are
 /// in [`HslBands::CENTERS_DEG`].
+#[cfg_attr(feature = "tsify", derive(tsify_next::Tsify))]
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct HslBands {
@@ -327,6 +334,7 @@ impl HslBands {
 }
 
 /// Split toning: tint shadows and highlights independently.
+#[cfg_attr(feature = "tsify", derive(tsify_next::Tsify))]
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct SplitTone {
@@ -356,6 +364,7 @@ impl SplitTone {
 
 /// One control point of a tone curve, both coordinates in the **working
 /// encoding** normalized to [0, 1].
+#[cfg_attr(feature = "tsify", derive(tsify_next::Tsify))]
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, Default)]
 pub struct CurvePoint {
     /// Input value, [0, 1].
@@ -375,6 +384,7 @@ impl CurvePoint {
 /// interpolated with a monotone cubic spline (see [`crate::curve`]). The
 /// master curve is applied first, then the channel curve. Applied in the
 /// working encoding.
+#[cfg_attr(feature = "tsify", derive(tsify_next::Tsify))]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(default)]
 pub struct ToneCurve {
@@ -427,6 +437,7 @@ impl ToneCurve {
 }
 
 /// Elliptical vignette.
+#[cfg_attr(feature = "tsify", derive(tsify_next::Tsify))]
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct Vignette {
@@ -461,6 +472,7 @@ impl Vignette {
 
 /// Deterministic film grain. Same seed + same pixel coordinate → same noise
 /// on every backend.
+#[cfg_attr(feature = "tsify", derive(tsify_next::Tsify))]
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct Grain {
@@ -488,6 +500,7 @@ impl Grain {
 /// Stage 2 — the creative grade. Order of application:
 /// primaries → lift/gamma/gain → HSL → split tone → tone curve → LUT →
 /// vignette → grain.
+#[cfg_attr(feature = "tsify", derive(tsify_next::Tsify))]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(default)]
 pub struct CreativeParameters {

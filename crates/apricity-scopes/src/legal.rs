@@ -3,6 +3,7 @@ use serde::Serialize;
 use crate::luma;
 
 /// Result of [`broadcast_legal`]. Percentages are of total pixels, 0–100.
+#[cfg_attr(feature = "tsify", derive(tsify_next::Tsify))]
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct LegalReport {
     /// Percent of pixels with luma `Y' > 1.0 + tolerance` (over 100 IRE).

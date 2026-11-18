@@ -16,6 +16,7 @@ use bytemuck::{Pod, Zeroable};
 use glam::{Mat3, Vec3};
 
 /// Preview-only overlay drawn after the output transform.
+#[cfg_attr(feature = "tsify", derive(tsify_next::Tsify))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Overlay {

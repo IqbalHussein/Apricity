@@ -4,7 +4,7 @@
 //! reference CI machine.
 
 use apricity_core::GradeParameters;
-use apricity_render::{cpu, prepare, RenderContext};
+use apricity_render::{bake_lut, cpu, prepare, BakeScope, RenderContext};
 use criterion::{criterion_group, criterion_main, Criterion};
 
 fn kitchen_sink() -> GradeParameters {
@@ -27,6 +27,9 @@ fn bench(c: &mut Criterion) {
     let u = prepare(&kitchen_sink(), &RenderContext::srgb(w, h));
     c.bench_function("cpu_proxy_640x360_full_grade", |b| {
         b.iter(|| cpu::render_float(&u, None, &src, w, h))
+    });
+    c.bench_function("bake_33_full", |b| {
+        b.iter(|| bake_lut(&kitchen_sink(), 33, BakeScope::Full, None))
     });
     c.bench_function("prepare_uniforms", |b| {
         b.iter(|| prepare(&kitchen_sink(), &RenderContext::srgb(w, h)))

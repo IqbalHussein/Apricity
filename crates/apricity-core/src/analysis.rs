@@ -19,6 +19,7 @@ use crate::transfer::srgb_decode;
 use crate::white_balance::{gains, mired_shift_to_kelvin, REC2020_LUMA};
 
 /// Dominant light source class inferred from the white-balance estimate.
+#[cfg_attr(feature = "tsify", derive(tsify_next::Tsify))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Illuminant {
@@ -35,6 +36,7 @@ pub enum Illuminant {
 }
 
 /// Result of [`analyze`].
+#[cfg_attr(feature = "tsify", derive(tsify_next::Tsify))]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Stage1Analysis {
     /// Suggested Stage 1 exposure in **stops**.

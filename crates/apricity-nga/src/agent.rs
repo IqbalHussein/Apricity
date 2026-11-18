@@ -10,6 +10,7 @@ use crate::lexicon::{Category, ENTRIES};
 use crate::rng::{fnv1a32, SplitMix64};
 
 /// How a prompt relates to the current grade.
+#[cfg_attr(feature = "tsify", derive(tsify_next::Tsify))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum PromptMode {
@@ -24,6 +25,7 @@ pub enum PromptMode {
 }
 
 /// How much one prompt term moved one parameter.
+#[cfg_attr(feature = "tsify", derive(tsify_next::Tsify))]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Attribution {
     /// The lexicon phrase (normalized) that caused the change, or
@@ -37,6 +39,7 @@ pub struct Attribution {
 }
 
 /// Outcome of one agent invocation.
+#[cfg_attr(feature = "tsify", derive(tsify_next::Tsify))]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct NgaResult {
     /// Sanitized grade. Only `stage2` may differ from the input grade.

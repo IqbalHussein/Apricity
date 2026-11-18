@@ -16,6 +16,7 @@ use serde::{Deserialize, Serialize};
 use crate::Attribution;
 
 /// One changed parameter, ready for the Explainability Panel.
+#[cfg_attr(feature = "tsify", derive(tsify_next::Tsify))]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ParameterChange {
     /// Dotted parameter path (scalar or tone-curve path).

@@ -16,6 +16,7 @@ use crate::grade_parameters::{CurvePoint, GradeParameters, HslBand};
 
 /// Unit of a scalar parameter. Shown in the console and Explainability
 /// Panel; never implied.
+#[cfg_attr(feature = "tsify", derive(tsify_next::Tsify))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Unit {
@@ -54,6 +55,7 @@ impl Unit {
 }
 
 /// Which pipeline stage a parameter belongs to.
+#[cfg_attr(feature = "tsify", derive(tsify_next::Tsify))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Stage {
@@ -64,6 +66,7 @@ pub enum Stage {
 }
 
 /// Specification of one scalar parameter.
+#[cfg_attr(feature = "tsify", derive(tsify_next::Tsify))]
 #[derive(Clone, Copy, Serialize)]
 pub struct ScalarSpec {
     /// Dotted field path, e.g. `stage2.contrast`.
@@ -457,6 +460,7 @@ fn _assert_hsl_band_is_three_scalars(b: HslBand) -> [f32; 3] {
 }
 
 /// Serializable view of the whole table for the FFI.
+#[cfg_attr(feature = "tsify", derive(tsify_next::Tsify))]
 #[derive(Debug, Serialize)]
 pub struct SpecTable {
     /// Scalars in console order.

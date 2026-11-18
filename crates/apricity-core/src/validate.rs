@@ -12,6 +12,7 @@ use crate::grade_parameters::{GradeParameters, ToneCurve, SCHEMA_VERSION};
 use crate::param_spec::{all_scalar_specs, curve, CURVE_PATHS};
 
 /// One validation problem.
+#[cfg_attr(feature = "tsify", derive(tsify_next::Tsify))]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ValidationIssue {
     /// Dotted path of the offending field.

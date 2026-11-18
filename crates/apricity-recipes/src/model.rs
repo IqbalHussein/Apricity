@@ -15,6 +15,7 @@ const MAX_ID_CHARS: usize = 128;
 /// All timestamps are **milliseconds since the Unix epoch (UTC)**, supplied
 /// by the host. `params` is in the units and color spaces documented on
 /// [`GradeParameters`].
+#[cfg_attr(feature = "tsify", derive(tsify_next::Tsify))]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Recipe {
     /// File-format version, [`RECIPE_SCHEMA_VERSION`] when written by this build.

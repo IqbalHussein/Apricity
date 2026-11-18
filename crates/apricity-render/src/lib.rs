@@ -20,9 +20,11 @@
 pub mod cpu;
 #[cfg(feature = "gpu")]
 pub mod gpu;
+pub mod lut_bake;
 pub mod uniforms;
 
 #[cfg(feature = "golden-images")]
 pub mod golden;
 
+pub use lut_bake::{bake_lut, BakeScope};
 pub use uniforms::{prepare, GradeUniforms, Overlay, RenderContext};

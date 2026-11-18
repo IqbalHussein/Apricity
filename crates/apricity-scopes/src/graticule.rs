@@ -5,6 +5,7 @@ use serde::Serialize;
 use crate::vectorscope::{cbcr, to_scope};
 
 /// Named vectorscope target box centre in normalised scope coordinates.
+#[cfg_attr(feature = "tsify", derive(tsify_next::Tsify))]
 #[derive(Debug, Clone, Serialize)]
 pub struct VectorTarget {
     /// One of `"R"`, `"MG"`, `"B"`, `"CY"`, `"G"`, `"YL"`.
@@ -17,6 +18,7 @@ pub struct VectorTarget {
 
 /// Overlay geometry for [`crate::vectorscope`], in the same normalised
 /// coordinates (x right, y down, unit square).
+#[cfg_attr(feature = "tsify", derive(tsify_next::Tsify))]
 #[derive(Debug, Clone, Serialize)]
 pub struct Graticule {
     /// 75 %-amplitude colour-bar targets.

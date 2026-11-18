@@ -39,6 +39,7 @@ struct ViewUniforms {
 }
 
 /// How the image is placed in the target.
+#[cfg_attr(feature = "tsify", derive(tsify_next::Tsify))]
 #[derive(Debug, Clone, Copy, PartialEq, serde::Serialize, serde::Deserialize)]
 #[serde(default)]
 pub struct ViewParams {
@@ -63,6 +64,7 @@ impl Default for ViewParams {
 }
 
 /// Wipe comparison.
+#[cfg_attr(feature = "tsify", derive(tsify_next::Tsify))]
 #[derive(Debug, Clone, Copy, PartialEq, serde::Serialize, serde::Deserialize)]
 #[serde(default)]
 pub struct CompareParams {

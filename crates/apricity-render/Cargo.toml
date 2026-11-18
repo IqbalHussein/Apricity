@@ -7,12 +7,16 @@ license.workspace = true
 description = "wgpu-based Stage 1 + Stage 2 pipeline for Apricity, with CPU reference impl."
 
 [features]
+# Emits TypeScript declarations for the public data types (used by apricity-ffi).
+tsify = ["dep:tsify-next", "dep:wasm-bindgen"]
 default = ["gpu"]
 # The wgpu pipeline. The CPU reference (`cpu` module) is always built.
 gpu = ["dep:wgpu"]
 golden-images = ["dep:image", "gpu", "dep:pollster"]
 
 [dependencies]
+tsify-next = { version = "0.5", default-features = false, features = ["json"], optional = true }
+wasm-bindgen = { version = "0.2", optional = true }
 apricity-core = { path = "../apricity-core" }
 apricity-lut = { path = "../apricity-lut" }
 bytemuck = { workspace = true }
