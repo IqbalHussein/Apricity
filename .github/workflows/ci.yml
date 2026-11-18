@@ -62,7 +62,46 @@ jobs:
         with:
           node-version: 20
           cache: pnpm
-      - run: pnpm install --frozen-lockfile=false
+      - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @apricity/web typecheck
+      - run: pnpm --filter @apricity/web lint
       - run: pnpm --filter @apricity/web build
       - run: pnpm --filter @apricity/web test
+
+  e2e:
+    name: Web shell (Playwright, CPU renderer)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - uses: Swatinem/rust-cache@v2
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: wasm-bindgen-cli@0.2.130
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+        working-directory: shells/web
+      - run: pnpm --filter @apricity/web build:wasm
+      # Hosted runners have no GPU, so only the CPU-renderer project runs here.
+      # The `webgpu` project runs locally, or later on a GPU runner.
+      - name: Run Playwright
+        run: pnpm --filter @apricity/web e2e --project=cpu-fallback
+        env:
+          CI: "true"
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            shells/web/playwright-report/
+            shells/web/test-results/
+          retention-days: 7

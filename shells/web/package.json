@@ -12,12 +12,14 @@
     "test:watch": "vitest",
     "lint": "eslint src --ext .ts,.tsx",
     "format": "prettier --write \"src/**/*.{ts,tsx,css,html}\"",
+    "e2e": "playwright test",
     "typecheck": "pnpm run build:wasm && tsc --noEmit"
   },
   "dependencies": {
     "solid-js": "^1.8.0"
   },
   "devDependencies": {
+    "@playwright/test": "1.63.0",
     "@types/node": "^20.19.43",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
