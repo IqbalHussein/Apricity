@@ -4,11 +4,17 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
+repository.workspace = true
 description = "Recipe model, in-memory store, and persistence trait. Host shells implement I/O."
 
+[features]
+# Emits TypeScript declarations for the public data types (used by apricity-ffi).
+tsify = ["dep:tsify-next", "dep:wasm-bindgen"]
+
 [dependencies]
+tsify-next = { version = "0.5", default-features = false, features = ["json"], optional = true }
+wasm-bindgen = { version = "0.2", optional = true }
 apricity-core = { path = "../apricity-core" }
-apricity-lut = { path = "../apricity-lut" }
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }

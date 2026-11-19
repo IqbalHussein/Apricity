@@ -31,6 +31,8 @@ pub enum ColorSpace {
     LinearRec2020,
     /// sRGB primaries, linear transfer.
     LinearSrgb,
+    /// Display P3: DCI-P3 primaries, D65 white, sRGB transfer.
+    DisplayP3,
 }
 
 // The matrix literals below intentionally reproduce the published f64
@@ -46,6 +48,14 @@ const SRGB_TO_XYZ: [[f32; 3]; 3] = [
     [0.412_456_4, 0.357_576_1, 0.180_437_5],
     [0.212_672_9, 0.715_152_2, 0.072_175_0],
     [0.019_333_9, 0.119_192_0, 0.950_304_1],
+];
+
+/// Display P3 (P3-D65) RGB → CIE XYZ (SMPTE EG 432-1).
+#[allow(clippy::excessive_precision)]
+const P3_D65_TO_XYZ: [[f32; 3]; 3] = [
+    [0.486_570_9, 0.265_667_7, 0.198_217_3],
+    [0.228_974_6, 0.691_738_5, 0.079_286_9],
+    [0.000_000_0, 0.045_113_4, 1.043_944_4],
 ];
 
 /// ITU-R BT.2020 D65 RGB → CIE XYZ.
@@ -64,6 +74,7 @@ impl ColorSpace {
         match self {
             ColorSpace::Srgb | ColorSpace::Rec709 | ColorSpace::LinearSrgb => mat_from(SRGB_TO_XYZ),
             ColorSpace::Rec2020 | ColorSpace::LinearRec2020 => mat_from(REC2020_TO_XYZ),
+            ColorSpace::DisplayP3 => mat_from(P3_D65_TO_XYZ),
         }
     }
 
@@ -77,7 +88,7 @@ impl ColorSpace {
     #[inline]
     pub fn decode(self, channel: f32) -> f32 {
         match self {
-            ColorSpace::Srgb => transfer::srgb_decode(channel),
+            ColorSpace::Srgb | ColorSpace::DisplayP3 => transfer::srgb_decode(channel),
             ColorSpace::Rec709 => transfer::bt1886_decode(channel),
             ColorSpace::Rec2020 => transfer::bt2020_decode(channel),
             ColorSpace::LinearSrgb | ColorSpace::LinearRec2020 => channel,
@@ -89,18 +100,20 @@ impl ColorSpace {
     #[inline]
     pub fn encode(self, channel: f32) -> f32 {
         match self {
-            ColorSpace::Srgb => transfer::srgb_encode(channel),
+            ColorSpace::Srgb | ColorSpace::DisplayP3 => transfer::srgb_encode(channel),
             ColorSpace::Rec709 => transfer::bt1886_encode(channel),
             ColorSpace::Rec2020 => transfer::bt2020_encode(channel),
             ColorSpace::LinearSrgb | ColorSpace::LinearRec2020 => channel,
         }
     }
 
-    fn decode_rgb(self, rgb: Vec3) -> Vec3 {
+    /// Decode an RGB triple to linear-light (see [`Self::decode`]).
+    pub fn decode_rgb(self, rgb: Vec3) -> Vec3 {
         Vec3::new(self.decode(rgb.x), self.decode(rgb.y), self.decode(rgb.z))
     }
 
-    fn encode_rgb(self, rgb: Vec3) -> Vec3 {
+    /// Encode a linear-light RGB triple (see [`Self::encode`]).
+    pub fn encode_rgb(self, rgb: Vec3) -> Vec3 {
         Vec3::new(self.encode(rgb.x), self.encode(rgb.y), self.encode(rgb.z))
     }
 }
@@ -150,6 +163,7 @@ fn same_primaries(a: ColorSpace, b: ColorSpace) -> bool {
         (a, b),
         (Srgb | Rec709 | LinearSrgb, Srgb | Rec709 | LinearSrgb)
             | (Rec2020 | LinearRec2020, Rec2020 | LinearRec2020)
+            | (DisplayP3, DisplayP3)
     )
 }
 
@@ -171,6 +185,7 @@ mod tests {
             ColorSpace::Rec2020,
             ColorSpace::LinearRec2020,
             ColorSpace::LinearSrgb,
+            ColorSpace::DisplayP3,
         ] {
             assert_eq!(convert(v, cs, cs), v);
         }
@@ -208,6 +223,7 @@ mod tests {
             Just(ColorSpace::Rec2020),
             Just(ColorSpace::LinearRec2020),
             Just(ColorSpace::LinearSrgb),
+            Just(ColorSpace::DisplayP3),
         ]
     }
 

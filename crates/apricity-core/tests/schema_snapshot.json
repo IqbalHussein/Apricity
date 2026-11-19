@@ -1,0 +1,200 @@
+{
+  "identity": {
+    "schema_version": 1,
+    "stage1": {
+      "enabled": true,
+      "input_profile": "none",
+      "log_to_display": true,
+      "exposure": 0.0,
+      "temperature": 0.0,
+      "tint": 0.0,
+      "black_point": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0
+      },
+      "auto_exposure": false,
+      "auto_white_balance": false,
+      "auto_black_point": false,
+      "exposure_target": 0.45
+    },
+    "stage2": {
+      "enabled": true,
+      "exposure": 0.0,
+      "contrast": 0.0,
+      "highlights": 0.0,
+      "shadows": 0.0,
+      "whites": 0.0,
+      "blacks": 0.0,
+      "temperature": 0.0,
+      "tint": 0.0,
+      "vibrance": 0.0,
+      "saturation": 0.0,
+      "lift": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "master": 0.0
+      },
+      "gamma": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "master": 0.0
+      },
+      "gain": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "master": 0.0
+      },
+      "hsl": {
+        "red": {
+          "hue": 0.0,
+          "saturation": 0.0,
+          "luminance": 0.0
+        },
+        "orange": {
+          "hue": 0.0,
+          "saturation": 0.0,
+          "luminance": 0.0
+        },
+        "yellow": {
+          "hue": 0.0,
+          "saturation": 0.0,
+          "luminance": 0.0
+        },
+        "green": {
+          "hue": 0.0,
+          "saturation": 0.0,
+          "luminance": 0.0
+        },
+        "aqua": {
+          "hue": 0.0,
+          "saturation": 0.0,
+          "luminance": 0.0
+        },
+        "blue": {
+          "hue": 0.0,
+          "saturation": 0.0,
+          "luminance": 0.0
+        },
+        "purple": {
+          "hue": 0.0,
+          "saturation": 0.0,
+          "luminance": 0.0
+        },
+        "magenta": {
+          "hue": 0.0,
+          "saturation": 0.0,
+          "luminance": 0.0
+        }
+      },
+      "split_tone": {
+        "shadow_hue": 0.0,
+        "shadow_saturation": 0.0,
+        "highlight_hue": 0.0,
+        "highlight_saturation": 0.0,
+        "balance": 0.0
+      },
+      "tone_curve": {
+        "master": [],
+        "red": [],
+        "green": [],
+        "blue": []
+      },
+      "lut_id": null,
+      "lut_strength": 100.0,
+      "vignette": {
+        "amount": 0.0,
+        "midpoint": 50.0,
+        "feather": 50.0,
+        "roundness": 0.0,
+        "center_x": 0.0,
+        "center_y": 0.0
+      },
+      "grain": {
+        "amount": 0.0,
+        "size": 1.0,
+        "roughness": 50.0,
+        "seed": 0
+      }
+    }
+  },
+  "scalar_paths": [
+    "stage1.exposure",
+    "stage1.temperature",
+    "stage1.tint",
+    "stage1.black_point.r",
+    "stage1.black_point.g",
+    "stage1.black_point.b",
+    "stage1.exposure_target",
+    "stage2.exposure",
+    "stage2.contrast",
+    "stage2.highlights",
+    "stage2.shadows",
+    "stage2.whites",
+    "stage2.blacks",
+    "stage2.temperature",
+    "stage2.tint",
+    "stage2.vibrance",
+    "stage2.saturation",
+    "stage2.lift.r",
+    "stage2.lift.g",
+    "stage2.lift.b",
+    "stage2.lift.master",
+    "stage2.gamma.r",
+    "stage2.gamma.g",
+    "stage2.gamma.b",
+    "stage2.gamma.master",
+    "stage2.gain.r",
+    "stage2.gain.g",
+    "stage2.gain.b",
+    "stage2.gain.master",
+    "stage2.split_tone.shadow_hue",
+    "stage2.split_tone.shadow_saturation",
+    "stage2.split_tone.highlight_hue",
+    "stage2.split_tone.highlight_saturation",
+    "stage2.split_tone.balance",
+    "stage2.lut_strength",
+    "stage2.vignette.amount",
+    "stage2.vignette.midpoint",
+    "stage2.vignette.feather",
+    "stage2.vignette.roundness",
+    "stage2.vignette.center_x",
+    "stage2.vignette.center_y",
+    "stage2.grain.amount",
+    "stage2.grain.size",
+    "stage2.grain.roughness",
+    "stage2.hsl.red.hue",
+    "stage2.hsl.red.saturation",
+    "stage2.hsl.red.luminance",
+    "stage2.hsl.orange.hue",
+    "stage2.hsl.orange.saturation",
+    "stage2.hsl.orange.luminance",
+    "stage2.hsl.yellow.hue",
+    "stage2.hsl.yellow.saturation",
+    "stage2.hsl.yellow.luminance",
+    "stage2.hsl.green.hue",
+    "stage2.hsl.green.saturation",
+    "stage2.hsl.green.luminance",
+    "stage2.hsl.aqua.hue",
+    "stage2.hsl.aqua.saturation",
+    "stage2.hsl.aqua.luminance",
+    "stage2.hsl.blue.hue",
+    "stage2.hsl.blue.saturation",
+    "stage2.hsl.blue.luminance",
+    "stage2.hsl.purple.hue",
+    "stage2.hsl.purple.saturation",
+    "stage2.hsl.purple.luminance",
+    "stage2.hsl.magenta.hue",
+    "stage2.hsl.magenta.saturation",
+    "stage2.hsl.magenta.luminance"
+  ],
+  "curve_paths": [
+    "stage2.tone_curve.master",
+    "stage2.tone_curve.red",
+    "stage2.tone_curve.green",
+    "stage2.tone_curve.blue"
+  ]
+}

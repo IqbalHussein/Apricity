@@ -4,16 +4,41 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
-description = "wgpu-based Stage 1 + Stage 2 compute pipeline for Apricity, with CPU reference impl."
+repository.workspace = true
+description = "wgpu-based Stage 1 + Stage 2 pipeline for Apricity, with CPU reference impl."
 
 [features]
-default = []
-golden-images = ["dep:image"]
+# Emits TypeScript declarations for the public data types (used by apricity-ffi).
+tsify = ["dep:tsify-next", "dep:wasm-bindgen"]
+default = ["gpu"]
+# The wgpu pipeline. The CPU reference (`cpu` module) is always built.
+gpu = ["dep:wgpu"]
+golden-images = ["dep:image", "gpu", "dep:pollster"]
 
 [dependencies]
+tsify-next = { version = "0.5", default-features = false, features = ["json"], optional = true }
+wasm-bindgen = { version = "0.2", optional = true }
 apricity-core = { path = "../apricity-core" }
-wgpu = { workspace = true }
+apricity-lut = { path = "../apricity-lut" }
 bytemuck = { workspace = true }
 glam = { workspace = true }
+serde = { workspace = true }
 thiserror = { workspace = true }
 image = { workspace = true, optional = true, default-features = false, features = ["png"] }
+pollster = { version = "0.4", optional = true }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+wgpu = { workspace = true, optional = true, features = ["vulkan", "metal", "dx12", "parking_lot"] }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wgpu = { workspace = true, optional = true, features = ["webgpu"] }
+
+[dev-dependencies]
+wgpu = { workspace = true, features = ["vulkan", "metal", "dx12", "parking_lot"] }
+criterion = { workspace = true }
+pollster = "0.4"
+naga = { version = "30", features = ["wgsl-in"] }
+
+[[bench]]
+name = "pipeline"
+harness = false

@@ -4,6 +4,7 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
+repository.workspace = true
 description = "FFI surface: WASM bindings for web, UniFFI bindings for Kotlin (Android) and Swift (iOS)."
 
 [lib]
@@ -11,15 +12,46 @@ crate-type = ["cdylib", "rlib"]
 
 [features]
 default = []
-wasm = ["dep:wasm-bindgen", "dep:serde-wasm-bindgen"]
+wasm = [
+    "dep:wasm-bindgen",
+    "dep:wasm-bindgen-futures",
+    "dep:js-sys",
+    "dep:web-sys",
+    "dep:serde-wasm-bindgen",
+    "dep:console_error_panic_hook",
+    "dep:tsify-next",
+    "dep:wgpu",
+    "apricity-core/tsify",
+    "apricity-recipes/tsify",
+    "apricity-nga/tsify",
+    "apricity-scopes/tsify",
+    "apricity-render/tsify",
+]
 uniffi = ["dep:uniffi"]
 
 [dependencies]
 apricity-core = { path = "../apricity-core" }
+apricity-lut = { path = "../apricity-lut" }
+apricity-nga = { path = "../apricity-nga" }
 apricity-recipes = { path = "../apricity-recipes" }
+apricity-render = { path = "../apricity-render" }
+apricity-scopes = { path = "../apricity-scopes" }
+glam = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 
-wasm-bindgen = { version = "0.2", optional = true }
+wasm-bindgen = { version = "0.2.130", optional = true }
+wasm-bindgen-futures = { version = "0.4", optional = true }
+js-sys = { version = "0.3", optional = true }
+web-sys = { version = "0.3", optional = true, features = [
+    "Window", "Document", "Navigator", "Element", "HtmlCanvasElement", "CanvasRenderingContext2d",
+    "ImageData", "ImageBitmap", "HtmlVideoElement", "console",
+] }
 serde-wasm-bindgen = { version = "0.6", optional = true }
+console_error_panic_hook = { version = "0.1", optional = true }
+tsify-next = { version = "0.5", default-features = false, features = ["json"], optional = true }
 uniffi = { version = "0.28", optional = true }
+wgpu = { workspace = true, features = ["webgpu"], optional = true }
+
+[dev-dependencies]
+apricity-core = { path = "../apricity-core" }

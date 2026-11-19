@@ -4,6 +4,7 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
+repository.workspace = true
 description = "Pure-Rust .cube parser/writer and 3D LUT sampling."
 
 [dependencies]
