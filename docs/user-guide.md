@@ -189,11 +189,11 @@ LUT import and export are Pro features.
 
 Choose **Export**. For a photo, the **Image** tab offers JPEG, PNG and WebP (WebP only where your browser can encode it) and a quality slider for JPEG and WebP. The dialog shows the output size before you export. Export renders from your original file at full resolution.
 
-Free exports are limited to 2048 px on the long edge and carry a small "Graded with Apricity" mark in the bottom-right corner. Pro exports at full resolution with no mark. The exported file has no color profile attached.
+Free exports are limited to 2048 px on the long edge and carry a small "Graded with Apricity" mark in the bottom-right corner. Pro exports at full resolution with no mark.
 
 ## Video
 
-You can open an MP4 or MOV file, grade it with the same controls, and export it. This feature was finished late in v1.0, so details may change (verify).
+You can open an MP4 or MOV file, grade it with the same controls, and export it. This section follows the source as it stood when it was written (verify).
 
 - **Playback.** A transport bar appears under the preview with play and pause, a scrubber, the current time and duration, previous and next frame, loop, and mute. The mute button is disabled for clips with no audio.
 - **Grading.** Corrections, the AI agent, scopes and Review tools work on the frame you are viewing. Scopes and Auto analysis sample the video a few times a second while it plays.
