@@ -106,7 +106,7 @@ Rust core:
 - `cargo test -p apricity-core param_spec` runs the tests whose name contains `param_spec`; the same form works for any crate and test name.
 - `cargo fmt --all --check`
 - `cargo clippy --workspace --all-targets --features apricity-render/golden-images -- -D warnings`
-- `cargo bench -p apricity-render --bench pipeline -- --quick` and `cargo bench -p apricity-scopes --bench scopes -- --quick` (criterion; naming the bench is required, because the lib target rejects `--quick`). Budgets are enforced by CI on a reference machine, not in the dev loop.
+- `cargo bench -p apricity-render --bench pipeline -- --quick` and `cargo bench -p apricity-scopes --bench scopes -- --quick` (criterion; naming the bench is required, because the lib target rejects `--quick`). Run manually; CI enforcement is a TODO (see Testability).
 
 Golden-image and CPU/GPU parity tests (lavapipe is software Vulkan; `apt-get install mesa-vulkan-drivers vulkan-tools` on Linux):
 

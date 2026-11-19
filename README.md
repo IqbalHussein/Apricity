@@ -123,4 +123,4 @@ Native shells (Tauri desktop, Android, iOS) are planned for v1.5 and v2.0 and do
 
 ## License
 
-Apache-2.0, as declared in `Cargo.toml`.
+Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE).
