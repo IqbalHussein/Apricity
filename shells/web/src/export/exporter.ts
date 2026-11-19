@@ -15,10 +15,9 @@ import {
   IMAGE_FORMATS,
   lutFilename,
   qualityToUnit,
-  watermarkLayout,
-  WATERMARK_TEXT,
 } from "./size";
 import type { ImageFormat } from "./size";
+import { drawWatermark } from "./watermark";
 
 /** Options of an image export. */
 export interface ImageExportOptions {
@@ -97,19 +96,6 @@ function canvasToBlob(canvas: HTMLCanvasElement, mime: string, quality: number):
       quality,
     );
   });
-}
-
-function drawWatermark(ctx: CanvasRenderingContext2D, w: number, h: number): void {
-  const { fontPx, x, y } = watermarkLayout(w, h);
-  ctx.save();
-  ctx.font = `500 ${fontPx}px Archivo, system-ui, sans-serif`;
-  ctx.textAlign = "right";
-  ctx.textBaseline = "alphabetic";
-  ctx.shadowColor = "rgba(0,0,0,0.55)";
-  ctx.shadowBlur = fontPx * 0.35;
-  ctx.fillStyle = "rgba(255,255,255,0.88)";
-  ctx.fillText(WATERMARK_TEXT, x, y);
-  ctx.restore();
 }
 
 /**

@@ -131,3 +131,46 @@ export const DownloadIcon = (p: IconProps): JSX.Element => (
     <path d="M8 2.5v8M4.5 7 8 10.5 11.5 7M3 13.5h10" />
   </Svg>
 );
+
+/** Play triangle. */
+export const PlayIcon = (p: IconProps): JSX.Element => (
+  <Svg {...p}>
+    <path d="M5 3.2v9.6L12.5 8 5 3.2Z" />
+  </Svg>
+);
+/** Pause bars. */
+export const PauseIcon = (p: IconProps): JSX.Element => (
+  <Svg {...p}>
+    <path d="M5.5 3.5v9M10.5 3.5v9" />
+  </Svg>
+);
+/** Step back one frame. */
+export const FramePrevIcon = (p: IconProps): JSX.Element => (
+  <Svg {...p}>
+    <path d="M4 3.5v9M12 3.5 6.5 8 12 12.5v-9Z" />
+  </Svg>
+);
+/** Step forward one frame. */
+export const FrameNextIcon = (p: IconProps): JSX.Element => (
+  <Svg {...p}>
+    <path d="M12 3.5v9M4 3.5 9.5 8 4 12.5v-9Z" />
+  </Svg>
+);
+/** Loop arrows. */
+export const LoopIcon = (p: IconProps): JSX.Element => (
+  <Svg {...p}>
+    <path d="M3 7V6a2 2 0 0 1 2-2h7.5M10.5 2l2 2-2 2M13 9v1a2 2 0 0 1-2 2H3.5M5.5 14l-2-2 2-2" />
+  </Svg>
+);
+/** Speaker with sound. */
+export const VolumeIcon = (p: IconProps): JSX.Element => (
+  <Svg {...p}>
+    <path d="M2.5 6.2h2.3L8 3.5v9L4.8 9.8H2.5v-3.6ZM10.5 5.5a3.5 3.5 0 0 1 0 5" />
+  </Svg>
+);
+/** Speaker muted. */
+export const MutedIcon = (p: IconProps): JSX.Element => (
+  <Svg {...p}>
+    <path d="M2.5 6.2h2.3L8 3.5v9L4.8 9.8H2.5v-3.6ZM10.5 6l3 4M13.5 6l-3 4" />
+  </Svg>
+);

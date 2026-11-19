@@ -4,12 +4,15 @@ import { decodeToProxy } from "../lib/imageProxy";
 import type { ImageProxy } from "../lib/imageProxy";
 import { generateSampleImage } from "../lib/sampleImage";
 import { entitlements, requireFeature } from "../entitlements/store";
+import { isVideoFile } from "../video/model";
+import { demux } from "../video/mp4";
+import { closeVideo, openVideo } from "../video/player";
 import { resetAi } from "./ai";
 import { resetAb } from "./ab";
 import { resetForNewSource } from "./grade";
 import { ui } from "./ui";
 
-/** What kind of media a {@link Source} holds. Only images exist until M7 adds video. */
+/** What kind of media a {@link Source} holds. */
 export type SourceKind = "image" | "video";
 
 /** The image being graded. */
@@ -26,8 +29,18 @@ export interface Source {
   id: number;
   /** Display name (file name). */
   name: string;
-  /** Preview proxy (sRGB RGBA8, at most 2048 px on the longest side) and full-resolution size. */
+  /**
+   * Preview proxy (sRGB RGBA8, at most 2048 px on the longest side) and full-resolution size.
+   * For video it is the first frame; the live frame comes from the preview `<video>`.
+   */
   proxy: ImageProxy;
+  /** Present for video sources. */
+  video?: {
+    /** Frames per second of the video track (30 when the container could not be read). */
+    fps: number;
+    /** Clip duration in seconds. */
+    durationS: number;
+  };
 }
 
 /** A reference image for the Review wipe. */
@@ -78,6 +91,11 @@ export function setStage1Analysis(a: Stage1Analysis | null): void {
  * @param file - Original file for full-resolution export; `null` when the proxy is the full image.
  */
 export function openProxy(proxy: ImageProxy, name: string, file: File | null = null): void {
+  closeVideo();
+  activate({ kind: "image", file, name, proxy });
+}
+
+function activate(s: Omit<Source, "id">): void {
   nextId += 1;
   resetForNewSource();
   resetAi();
@@ -87,7 +105,7 @@ export function openProxy(proxy: ImageProxy, name: string, file: File | null = n
   ui.setView({ zoom: 1, pan: [0, 0] });
   resetAb();
   setLoadError(null);
-  setSource({ id: nextId, kind: "image", file, name, proxy });
+  setSource({ id: nextId, ...s });
 }
 
 /**
@@ -109,6 +127,51 @@ export async function openImageFile(file: File): Promise<boolean> {
   } finally {
     setLoading(false);
   }
+}
+
+/**
+ * Open an MP4 or MOV file as a video source: the preview plays it in a hidden
+ * `<video>`, export decodes it again with WebCodecs.
+ *
+ * @param file - H.264 MP4/MOV (HEVC where the browser decodes it).
+ * @returns `true` on success; on failure {@link importError} holds the copy.
+ */
+export async function openVideoFile(file: File): Promise<boolean> {
+  if (!requireFeature("import")) return false;
+  setLoading(true);
+  try {
+    let fps = 30;
+    try {
+      fps = (await demux(file)).video.fps;
+    } catch {
+      // the preview can still play a file mp4box cannot index; stepping assumes 30 fps
+    }
+    const opened = await openVideo(file, fps);
+    activate({
+      kind: "video",
+      file,
+      name: file.name,
+      proxy: opened.proxy,
+      video: { fps, durationS: opened.durationS },
+    });
+    entitlements.record("imports");
+    return true;
+  } catch (e) {
+    setLoadError(e instanceof Error ? e.message : String(e));
+    return false;
+  } finally {
+    setLoading(false);
+  }
+}
+
+/**
+ * Open a picked or dropped file as an image or a video.
+ *
+ * @param file - Image or MP4/MOV file.
+ * @returns `true` on success.
+ */
+export function openMediaFile(file: File): Promise<boolean> {
+  return isVideoFile(file) ? openVideoFile(file) : openImageFile(file);
 }
 
 /** Open the built-in procedural sample image. */

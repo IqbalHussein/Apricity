@@ -2040,3 +2040,98 @@ ul {
 .app.mobile .tb-theme {
   display: none;
 }
+
+/* ---------- video transport ---------- */
+
+.transport {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  background: var(--panel);
+  border-top: 1px solid var(--rule);
+}
+
+.transport-time {
+  min-width: 4.4ch;
+  font-size: 12px;
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  padding: 0 6px;
+}
+
+.transport-dur {
+  text-align: left;
+}
+
+.transport-scrub {
+  flex: 1 1 0;
+  min-width: 0;
+  margin: 0 4px;
+}
+
+.transport .icon-btn.is-on {
+  background: var(--raised);
+  outline: 1px solid var(--text-dim);
+  outline-offset: -1px;
+}
+
+.transport .icon-btn:disabled {
+  opacity: 0.4;
+}
+
+.app.mobile .transport {
+  flex-wrap: wrap;
+  padding: 4px 12px 6px;
+  row-gap: 0;
+}
+
+.app.mobile .transport-scrub {
+  order: -1;
+  flex: 1 0 100%;
+  margin: 2px 0 0;
+}
+
+.app.mobile .transport .transport-time {
+  margin-left: auto;
+}
+
+.app.mobile .transport .transport-dur {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+/* ---------- video export ---------- */
+
+.export-meter {
+  width: 100%;
+  height: 6px;
+  appearance: none;
+  border: 0;
+  border-radius: 3px;
+  background: var(--raised);
+  overflow: hidden;
+}
+
+.export-meter::-webkit-progress-bar {
+  background: var(--raised);
+}
+
+.export-meter::-webkit-progress-value {
+  background: var(--text);
+}
+
+.export-meter::-moz-progress-bar {
+  background: var(--text);
+}
+
+.export-stats {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+}

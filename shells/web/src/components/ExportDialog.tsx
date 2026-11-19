@@ -1,4 +1,4 @@
-import { createSignal, Show } from "solid-js";
+import { createSignal, onCleanup, Show } from "solid-js";
 import type { JSX } from "solid-js";
 import type { BakeScope } from "../core/wasm";
 import { entitlements, requireFeature } from "../entitlements/store";
@@ -10,7 +10,20 @@ import {
   IMAGE_FORMATS,
 } from "../export/size";
 import type { ImageFormat } from "../export/size";
+import { downloadBlob } from "../lib/download";
+import { engineBackend } from "../engine/bridge";
+import { gradeParams } from "../state/grade";
+import { activeLut } from "../state/lut";
 import { currentSource } from "../state/project";
+import { exportVideo, hasWebCodecs, resultMessage } from "../video/exportVideo";
+import type { VideoExportResult, VideoProgress } from "../video/exportVideo";
+import {
+  CPU_VIDEO_MESSAGE,
+  ExportCancelled,
+  formatClock,
+  NO_WEBCODECS_MESSAGE,
+  videoExportSize,
+} from "../video/model";
 import { Dialog } from "./Dialog";
 import { Segmented } from "./Segmented";
 import { UpgradeNotice } from "./UpgradeNotice";
@@ -23,7 +36,7 @@ export const exportDialogOpen = exportOpen;
 /** Open or close the Export dialog. */
 export const setExportDialogOpen = setExportOpen;
 
-type Tab = "image" | "lut";
+type Tab = "image" | "video" | "lut";
 type LutSize = "17" | "33" | "65";
 
 function ImageSection(): JSX.Element {
@@ -142,6 +155,144 @@ function ImageSection(): JSX.Element {
   );
 }
 
+function VideoSection(): JSX.Element {
+  const [progress, setProgress] = createSignal<VideoProgress | null>(null);
+  const [done, setDone] = createSignal<VideoExportResult | null>(null);
+  const [failure, setFailure] = createSignal<string | null>(null);
+  const [running, setRunning] = createSignal(false);
+  let abort: AbortController | null = null;
+  onCleanup(() => abort?.abort());
+
+  const blocked = (): string | null => {
+    if (!hasWebCodecs()) return NO_WEBCODECS_MESSAGE;
+    if (engineBackend() !== "webgpu") return CPU_VIDEO_MESSAGE;
+    return null;
+  };
+  const outSize = (): { width: number; height: number } | null => {
+    const s = currentSource();
+    return s
+      ? videoExportSize(s.proxy.fullWidth, s.proxy.fullHeight, entitlements.limits().exportLongEdge)
+      : null;
+  };
+  const run = async (): Promise<void> => {
+    const src = currentSource();
+    if (!src?.file || src.kind !== "video") return;
+    setDone(null);
+    setFailure(null);
+    setProgress(null);
+    setRunning(true);
+    abort = new AbortController();
+    const limits = entitlements.limits();
+    try {
+      const result = await exportVideo({
+        file: src.file,
+        name: src.name,
+        signal: abort.signal,
+        params: gradeParams(),
+        lutText: activeLut()?.text ?? null,
+        longEdge: limits.exportLongEdge,
+        watermark: limits.watermark,
+        onProgress: setProgress,
+      });
+      downloadBlob(result.blob, result.filename);
+      setDone(result);
+    } catch (e) {
+      if (e instanceof ExportCancelled) setFailure("Export cancelled. Nothing was saved.");
+      else setFailure(e instanceof Error ? e.message : String(e));
+    } finally {
+      abort = null;
+      setRunning(false);
+      setProgress(null);
+    }
+  };
+  return (
+    <section class="export-section" data-testid="export-video">
+      <Show when={outSize()}>
+        {(s) => (
+          <p class="dialog-note" data-testid="export-size">
+            Output: {s().width} × {s().height} px, MP4 (H.264 where the browser can encode it, otherwise
+            VP9)
+            {entitlements.limits().watermark ? ", with the Apricity mark in the corner" : ""}.
+            Audio is copied as it is.
+          </p>
+        )}
+      </Show>
+      <Show when={entitlements.tier() === "free"}>
+        <p class="dialog-note">
+          Free exports are limited to {entitlements.limits().exportLongEdge} px on the long edge.
+        </p>
+      </Show>
+      <Show when={entitlements.beta()}>
+        <p class="dialog-note">
+          Full resolution without the mark is a Pro feature. During the beta, every feature is
+          unlocked.
+        </p>
+      </Show>
+      <Show when={blocked()}>
+        <p class="error-text" role="alert" data-testid="export-video-blocked">
+          {blocked()}
+        </p>
+      </Show>
+      <Show when={running()}>
+        <div class="export-video-progress" role="status" data-testid="export-progress">
+          <progress
+            class="export-meter"
+            max="1"
+            value={progress()?.fraction ?? 0}
+            aria-label="Export progress"
+          />
+          <div class="export-stats">
+            <span data-testid="export-frames">
+              Frame {progress()?.done ?? 0} of {progress()?.total ?? 0}
+            </span>
+            <span data-testid="export-elapsed">
+              {formatClock((progress()?.elapsedMs ?? 0) / 1000)} elapsed
+            </span>
+            <span data-testid="export-eta">
+              {progress()?.etaMs == null
+                ? "Estimating"
+                : `${formatClock((progress()?.etaMs ?? 0) / 1000)} left`}
+            </span>
+          </div>
+        </div>
+      </Show>
+      <Show when={done()}>
+        {(r) => (
+          <p class="export-done" role="status" data-testid="export-result">
+            {resultMessage(r())}
+          </p>
+        )}
+      </Show>
+      <Show when={failure()}>
+        <p class="error-text" role="alert" data-testid="export-error">
+          {failure()}
+        </p>
+      </Show>
+      <div class="dialog-actions">
+        <Show when={running()}>
+          <button
+            type="button"
+            class="btn"
+            data-testid="export-cancel"
+            onClick={() => abort?.abort()}
+          >
+            Cancel
+          </button>
+        </Show>
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-testid="export-confirm"
+          disabled={running() || blocked() !== null || !currentSource()}
+          onClick={() => void run()}
+        >
+          Export MP4
+        </button>
+      </div>
+    </section>
+  );
+}
+
 function LutSectionExport(): JSX.Element {
   const [size, setSize] = createSignal<LutSize>("33");
   const [scope, setScope] = createSignal<BakeScope>("creative");
@@ -216,26 +367,30 @@ function LutSectionExport(): JSX.Element {
 
 /**
  * Export dialog: image export (format, quality, full resolution capped per
- * tier, watermark on Free) and `.cube` LUT export. A video section joins the
- * tabs when video sources exist (M7); nothing shows for them until then.
+ * tier, watermark on Free) for images, MP4 export with progress and Cancel for
+ * video, and `.cube` LUT export for both.
  */
 export function ExportDialog(): JSX.Element {
-  const [tab, setTab] = createSignal<Tab>("image");
+  const isVideo = (): boolean => currentSource()?.kind === "video";
+  const [tab, setTab] = createSignal<Tab>(isVideo() ? "video" : "image");
   return (
     <Dialog title="Export" testId="export-dialog" onClose={() => setExportOpen(false)}>
-      <Show when={currentSource()?.kind === "image"}>
+      <Show when={currentSource()}>
         <Segmented<Tab>
           class="export-tabs"
           label="Export type"
           value={tab()}
           onChange={setTab}
           options={[
-            { value: "image", label: "Image" },
+            isVideo() ? { value: "video", label: "Video" } : { value: "image", label: "Image" },
             { value: "lut", label: "LUT (.cube)" },
           ]}
         />
-        <Show when={tab() === "image"}>
+        <Show when={tab() === "image" && !isVideo()}>
           <ImageSection />
+        </Show>
+        <Show when={tab() === "video" && isVideo()}>
+          <VideoSection />
         </Show>
         <Show when={tab() === "lut"}>
           <LutSectionExport />

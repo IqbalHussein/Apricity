@@ -2,7 +2,7 @@
 
 **Version:** 1.0  
 **Date:** May 4, 2026  
-**Status:** Draft
+**Status:** v1.0 web shell implemented (scope per ADR-0005); pending deploy to GitHub Pages (ADR-0008). Beta: all features unlocked (ADR-0009).
 
 ---
 
@@ -300,7 +300,7 @@ All stages are computed in `wgpu` compute shaders (WGSL). The same shader source
 | ProRAW (DNG) | — (browser API limit) | ✓ | ✓ |
 | ProRes (LOG & 422) | — | ✓ | ✓ |
 | H.264 / HEVC | ✓ via WebCodecs | ✓ | ✓ |
-| 3D LUT (.cube) | v1.5 | ✓ | ✓ |
+| 3D LUT (.cube) | ✓ (v1.0, ADR-0005) | ✓ | ✓ |
 | TIFF (16-bit) | v1.5 | v1.5 | v2.0 |
 | CinemaDNG | — | v2.0 | v2.0 |
 
@@ -496,6 +496,8 @@ The minimum viable product, shipped as a web application accessible at a public 
 - Monetization: Free + Pro subscription via Stripe
 - Web shell stack: TypeScript + Solid.js + Vite + WebGPU
 
+**As built.** ADR-0005 pulled these v1.5 items into v1.0 web: lift/gamma/gain wheels, 8-band HSL curves, split tone, vignette, seeded grain, `.cube` LUT import/export, histogram, A/B grade toggle, history/undo, the broadcast-legal flag, and false color/zebra overlays. ADR-0006 replaced the ONNX model with a deterministic lexicon engine behind a `GradeAgent` trait for v1.0, and ADR-0009 builds the Free/Pro gating without a checkout. Still excluded from v1.0: the Shot Coherence Engine, native shells, ProRAW/ProRes, lens corrections, and recipe deep-link sharing.
+
 ### Phase 2 — v1.5: Native Mobile + Desktop (Target: Q1 2027)
 
 - **Android shell:** Kotlin + Jetpack Compose, UniFFI bindings to Rust core, Play Billing
@@ -549,16 +551,26 @@ The original seven questions are largely resolved by the cross-platform pivot. R
 
 7. **Onboarding flow depth.** Hypothesis: 3-step visual onboarding + guided first grade. Validate after first beta.
 
+   *Status:* still open. The three-step hypothesis ships behind the `onboarding` flag (on by default, `?onboarding=0` turns it off) so it can be validated after the first beta.
+
 ### New, introduced by the pivot
 
 8. **Web UI framework.** Recommended: Solid.js + Vite (lightest reactivity model, best for high-frequency slider updates). Alternative: React, if community/hire concerns dominate. Decide before M4.
 
+   *Resolution (ADR-0002):* Solid.js + Vite + TypeScript.
+
 9. **Web payment provider.** Recommended: Stripe (mature, lowest fees, full subscription support). Alternative: Lemonsqueezy or Paddle as Merchant-of-Record to offload tax handling. Decide before M6.
+
+   *Status (ADR-0009):* still open. v1.0 ships an `EntitlementProvider` interface, the §9.1 tier limits and a `BETA_ALL_PRO` flag, with no checkout. A new ADR must decide this before the flag is turned off.
 
 10. **Tauri vs. egui for desktop shell (v1.5).** Recommended: Tauri 2 (reuses the web UI codebase). Alternative: egui (fully Rust-native, but introduces a third UI codebase). Decide before v1.5 kickoff.
 
 11. **WebGPU fallback for older browsers.** Recommended: WebGL2 fallback for preview rendering only; NGA is disabled if WebGPU is unavailable (graceful degradation, not full feature parity). Decide before M4.
 
+   *Resolution (ADR-0007):* without WebGPU the shell renders with the `apricity-render` CPU reference path (the code the parity tests hold the GPU to) at reduced resolution. The NGA stays enabled, because the v1 lexicon engine (ADR-0006) does not need WebGPU. There is no WebGL2 path.
+
 12. **Cross-platform subscription sync.** When and how to unify subscription state across shells. Likely v2.0 with a thin server (Supabase or similar). Out of scope for v1.0–v1.5.
 
 13. **Web-tier file format limits.** How aggressively to push browser file APIs (File System Access API, WebCodecs) for ProRAW / ProRes work in v1.0 vs. accepting these as native-shell-only features. Current recommendation per §7.4: native-shell-only.
+
+   *Resolution:* native-shell-only stands. v1.0 web does not read ProRAW or ProRes.

@@ -14,6 +14,7 @@ import { entitlements, requireFeature } from "../entitlements/store";
 import { downloadBlob, safeFileName } from "../lib/download";
 import { getPath, setPath } from "../lib/paramPath";
 import { downscaleRgba, rgbaToDataUrl } from "../lib/thumbnail";
+import { grabFrame, settledFrameCount } from "../video/player";
 import { RecipeStore, storage } from "../storage/idb";
 import { clearAllAi } from "./aimarks";
 import { lastPromptText } from "./ai";
@@ -260,6 +261,7 @@ export async function importRecipeFile(file: File): Promise<Recipe | null> {
 
 interface SmallProxy {
   sourceId: number;
+  frame: number;
   rgba: Uint8Array;
   width: number;
   height: number;
@@ -272,9 +274,15 @@ let thumbSource = -1;
 function smallProxy(): SmallProxy | null {
   const src = untrack(currentSource);
   if (!src) return null;
-  if (small?.sourceId !== src.id) {
-    const p = src.proxy;
-    small = { sourceId: src.id, ...downscaleRgba(p.rgba, p.width, p.height, THUMB_SIDE) };
+  // Video thumbnails follow the paused or seeked frame; images never change.
+  const frame = src.kind === "video" ? untrack(settledFrameCount) : 0;
+  if (small?.sourceId !== src.id || small.frame !== frame) {
+    const grabbed = src.kind === "video" ? grabFrame(THUMB_SIDE) : null;
+    if (grabbed) small = { sourceId: src.id, frame, ...grabbed };
+    else {
+      const p = src.proxy;
+      small = { sourceId: src.id, frame, ...downscaleRgba(p.rgba, p.width, p.height, THUMB_SIDE) };
+    }
   }
   return small;
 }
@@ -289,9 +297,10 @@ function smallProxy(): SmallProxy | null {
 export function recipeThumbnail(r: Recipe): string | null {
   const src = untrack(currentSource);
   if (!src) return r.thumbnail ?? null;
-  if (thumbSource !== src.id) {
+  const stamp = src.kind === "video" ? src.id * 1e6 + untrack(settledFrameCount) : src.id;
+  if (thumbSource !== stamp) {
     thumbCache.clear();
-    thumbSource = src.id;
+    thumbSource = stamp;
   }
   const key = `${r.id}:${r.updated_at_ms}`;
   if (thumbCache.has(key)) return thumbCache.get(key) ?? null;

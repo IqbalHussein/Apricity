@@ -22,6 +22,7 @@ import {
   starterRecipes,
 } from "../state/recipes";
 import { currentSource } from "../state/project";
+import { settledFrameCount } from "../video/player";
 import { Dialog } from "./Dialog";
 import { DownloadIcon, PencilIcon, TrashIcon } from "./Icons";
 import { UpgradeNotice } from "./UpgradeNotice";
@@ -90,6 +91,7 @@ export function SaveRecipeDialog(): JSX.Element {
 function Thumb(props: { recipe: Recipe }): JSX.Element {
   const url = createMemo(() => {
     currentSource();
+    settledFrameCount();
     return recipeThumbnail(props.recipe);
   });
   return (

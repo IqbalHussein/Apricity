@@ -1,7 +1,7 @@
 import { createSignal, onCleanup, onMount, Show } from "solid-js";
 import type { JSX } from "solid-js";
-import { pickImage } from "../lib/filePicker";
-import { importError, isLoading, openImageFile, openSample } from "../state/project";
+import { pickMedia } from "../lib/filePicker";
+import { importError, isLoading, openMediaFile, openSample } from "../state/project";
 import { OpenIcon } from "./Icons";
 
 /**
@@ -28,7 +28,7 @@ export function ImportDropzone(props: { empty: boolean }): JSX.Element {
     e.preventDefault();
     setDragging(false);
     const f = e.dataTransfer?.files[0];
-    if (f) void openImageFile(f);
+    if (f) void openMediaFile(f);
   };
   onMount(() => {
     window.addEventListener("dragover", onDragOver);
@@ -50,7 +50,7 @@ export function ImportDropzone(props: { empty: boolean }): JSX.Element {
             <button
               type="button"
               class="btn btn-primary"
-              onClick={() => pickImage((f) => void openImageFile(f))}
+              onClick={() => pickMedia((f) => void openMediaFile(f))}
               disabled={isLoading()}
             >
               <OpenIcon size={16} />

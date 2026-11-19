@@ -11,6 +11,7 @@ import { PreviewCanvas } from "./PreviewCanvas";
 import { RecipeDialogs, RecipeStrip } from "./Recipes";
 import { ReviewToolbar } from "./ReviewToolbar";
 import { ScopesPanel } from "./ScopesPanel";
+import { Transport } from "./Transport";
 import { ModeSwitch, TopBar } from "./TopBar";
 import { NoticeHost } from "./UpgradeNotice";
 
@@ -52,6 +53,7 @@ export function Shell(): JSX.Element {
       <TopBar />
       <main class="main">
         <PreviewCanvas />
+        <Transport />
         <Onboarding />
         <Show when={mode() === "quick"}>
           <div class="quick-hist">

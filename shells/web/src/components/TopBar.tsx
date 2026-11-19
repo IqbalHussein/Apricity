@@ -1,10 +1,10 @@
 import { For, onCleanup, onMount, Show } from "solid-js";
 import type { JSX } from "solid-js";
 import { planckianGradient } from "../lib/kelvin";
-import { pickImage } from "../lib/filePicker";
+import { pickMedia } from "../lib/filePicker";
 import { redo, undo } from "../state/grade";
 import { history } from "../state/history";
-import { currentSource, openImageFile } from "../state/project";
+import { currentSource, openMediaFile } from "../state/project";
 import type { Mode } from "../state/ui";
 import { ui } from "../state/ui";
 import { toggleAb } from "../state/ab";
@@ -165,7 +165,7 @@ export function TopBar(): JSX.Element {
           class="icon-btn tb-open"
           aria-label="Open file"
           title="Open file"
-          onClick={() => pickImage((f) => void openImageFile(f))}
+          onClick={() => pickMedia((f) => void openMediaFile(f))}
           disabled={currentSource() === null}
           classList={{ "hide-empty": currentSource() === null }}
         >

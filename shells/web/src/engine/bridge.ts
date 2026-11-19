@@ -15,6 +15,8 @@ import { history } from "../state/history";
 import { activeLut } from "../state/lut";
 import { currentReference, currentSource, setStage1Analysis } from "../state/project";
 import { ui } from "../state/ui";
+import { VIDEO_PROXY_INTERVAL_MS, VIDEO_PROXY_SIDE } from "../video/model";
+import { grabFrame, setFrameListener, videoElement } from "../video/player";
 
 /** Minimum gap between two scope computations, in milliseconds (10 Hz). */
 export const SCOPES_MIN_INTERVAL_MS = 100;
@@ -38,6 +40,12 @@ let observer: ResizeObserver | null = null;
 let disposeRoot: (() => void) | null = null;
 let appliedSourceId = -1;
 let appliedReferenceId = -1;
+let videoFrameDirty = false;
+let videoSettled = false;
+let lastProxyAt = -Infinity;
+let lastCpuUploadAt = -Infinity;
+/** Longest side of the CPU renderer's source, matching its own 640 px working size. */
+const CPU_VIDEO_SIDE = 640;
 
 /** Active rendering backend once the engine exists (tracked). */
 export const engineBackend = backend;
@@ -135,6 +143,7 @@ export function disposeEngine(): void {
   canvas = null;
   appliedSourceId = -1;
   appliedReferenceId = -1;
+  setFrameListener(null);
   setBackend(null);
 }
 
@@ -188,12 +197,19 @@ function installEffects(): void {
     if (!engine || !src || src.id === appliedSourceId) return;
     appliedSourceId = src.id;
     const p = src.proxy;
-    safe("source", () =>
-      engine?.setSourceRgba(p.rgba, p.width, p.height, p.fullWidth, p.fullHeight),
-    );
+    if (src.kind === "video") untrack(() => applyVideoSource(src.proxy.fullWidth, src.proxy.fullHeight));
+    else
+      safe("source", () =>
+        engine?.setSourceRgba(p.rgba, p.width, p.height, p.fullWidth, p.fullHeight),
+      );
     untrack(() => reanalyze(null));
     scopesDirty = true;
     dirty = true;
+  });
+
+  setFrameListener((e) => {
+    videoFrameDirty = true;
+    if (e.settled) videoSettled = true;
   });
 
   createEffect(() => {
@@ -271,6 +287,60 @@ function installEffects(): void {
   );
 }
 
+/** Upload the current video frame to the engine and refresh the scope proxy. */
+function applyVideoSource(fullW: number, fullH: number): void {
+  const video = videoElement();
+  if (!engine || !video) return;
+  if (backend() === "webgpu") {
+    safe("source", () => engine?.setSourceVideo(video));
+  } else {
+    // The CPU backend cannot read a <video>: draw it to a canvas and upload pixels.
+    const f = grabFrame(CPU_VIDEO_SIDE);
+    if (f) safe("source", () => engine?.setSourceRgba(f.rgba, f.width, f.height, fullW, fullH));
+  }
+  grabScopeProxy();
+  // Upload again inside the render tick so the frame and render() share a task.
+  videoFrameDirty = true;
+  videoSettled = true;
+}
+
+function grabScopeProxy(): void {
+  const f = grabFrame(VIDEO_PROXY_SIDE);
+  if (!f) return;
+  lastProxyAt = getClock().nowMs();
+  safe("proxy", () => engine?.setScopeProxyRgba(f.rgba, f.width, f.height));
+  scopesDirty = true;
+}
+
+/**
+ * Upload the frame the preview video presented. Runs inside the render tick so
+ * the GPU upload and `render()` share a task. The scope proxy refreshes at most
+ * every {@link VIDEO_PROXY_INTERVAL_MS} while playing, and at once when paused.
+ */
+function uploadVideoFrame(): void {
+  const video = videoElement();
+  const src = untrack(currentSource);
+  if (!engine || !video || src?.kind !== "video") return;
+  const now = getClock().nowMs();
+  if (backend() === "webgpu") {
+    safe("frame", () => engine?.setSourceVideo(video));
+  } else {
+    if (!videoSettled && now - lastCpuUploadAt < 100) {
+      videoFrameDirty = true;
+      return;
+    }
+    lastCpuUploadAt = now;
+    const f = grabFrame(CPU_VIDEO_SIDE);
+    if (f)
+      safe("frame", () =>
+        engine?.setSourceRgba(f.rgba, f.width, f.height, src.proxy.fullWidth, src.proxy.fullHeight),
+      );
+  }
+  if (videoSettled || now - lastProxyAt >= VIDEO_PROXY_INTERVAL_MS) grabScopeProxy();
+  videoSettled = false;
+  dirty = true;
+}
+
 function computeScopes(): void {
   if (!engine || !currentSource()) return;
   const list = kindsNow();
@@ -288,6 +358,10 @@ function kindsNow(): string[] {
 function tick(): void {
   rafId = requestAnimationFrame(tick);
   if (!engine) return;
+  if (videoFrameDirty) {
+    videoFrameDirty = false;
+    uploadVideoFrame();
+  }
   if (dirty && currentSource()) {
     dirty = false;
     safe("render", () => engine?.render());
