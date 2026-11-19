@@ -145,7 +145,7 @@ async function makeFixture(page: Page): Promise<Fixture> {
 async function openFixture(page: Page): Promise<Fixture> {
   const fx = await makeFixture(page);
   const chooser = page.waitForEvent("filechooser");
-  await page.getByRole("button", { name: "Open file" }).first().click();
+  await page.locator(".empty").getByRole("button", { name: "Open file" }).click();
   await (
     await chooser
   ).setFiles({ name: "test-clip.mp4", mimeType: "video/mp4", buffer: Buffer.from(fx.bytes) });
