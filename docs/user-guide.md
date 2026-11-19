@@ -193,12 +193,12 @@ Free exports are limited to 2048 px on the long edge and carry a small "Graded w
 
 ## Video
 
-You can open an MP4 or MOV file, grade it with the same controls, and export it. This section follows the source as it stood when it was written (verify).
+You can open an MP4 or MOV file, grade it with the same controls, and export it.
 
-- **Playback.** A transport bar appears under the preview with play and pause, a scrubber, the current time and duration, previous and next frame, loop, and mute. The mute button is disabled for clips with no audio.
-- **Grading.** Corrections, the AI agent, scopes and Review tools work on the frame you are viewing. Scopes and Auto analysis sample the video a few times a second while it plays.
-- **Export.** The **Video** tab in the Export dialog renders every frame through your grade and saves an MP4. It uses H.264 where your browser can encode it and VP9 otherwise. AAC audio is copied unchanged. If the source audio isn't AAC, it's left out, and the result message says so. A progress bar shows the frame count, elapsed time and time left, and **Cancel** stops it without saving anything. Free export is capped at 2048 px and carries the mark.
-- **Requirements.** Video export needs WebGPU and WebCodecs, so it isn't available on the CPU renderer. If your browser can't play a file, the message asks for an H.264 MP4 or MOV.
+- **Playback.** A transport bar appears under the preview with play and pause, previous and next frame, the current time, a scrubber, the duration, loop, and mute. The preview starts muted. The mute button is disabled for clips with no audio. Press Space to play or pause, and `,` and `.` to step one frame back or forward (see [Keyboard shortcuts](#keyboard-shortcuts)).
+- **Grading.** Corrections, the AI agent, scopes and Review tools work on the frame you are viewing. Scopes and Auto analysis sample the video about five times a second while it plays.
+- **Export.** The **Video** tab in the Export dialog renders every frame through your grade and saves an MP4. It uses H.264 where your browser can encode it and VP9 otherwise, and the result message names the codec used. AAC audio is copied unchanged. If the source audio isn't AAC, it's left out, and the result message says so. A progress bar shows the frame count, elapsed time and time left, and **Cancel** stops it without saving anything. Free export is capped at 2048 px on the long edge and carries the mark.
+- **Requirements.** The CPU renderer can preview video but can't export it: video export needs WebGPU and WebCodecs. If your browser can't play a file, the message asks for an H.264 MP4 or MOV.
 
 ## Offline use
 

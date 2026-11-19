@@ -1,7 +1,9 @@
-//! Performance budget benches (PRD §10.3). The CPU reference is the
-//! fallback preview path and the scope path, so its proxy-resolution
-//! cost is budgeted: a 640×360 proxy must render well under 16 ms on the
-//! reference CI machine.
+//! Benches for the CPU reference pipeline at a 640×360 proxy with a
+//! kitchen-sink grade. The CPU reference is the fallback preview path and
+//! the scope path. It is a degraded path (lower resolution and frame rate,
+//! per ADR-0007) and is not expected to meet the < 16 ms preview budget
+//! (PRD §10.3), which applies to the GPU path. This bench reports timings
+//! only and enforces no budget.
 
 use apricity_core::GradeParameters;
 use apricity_render::{bake_lut, cpu, prepare, BakeScope, RenderContext};

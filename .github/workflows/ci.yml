@@ -51,16 +51,16 @@ jobs:
           targets: wasm32-unknown-unknown
       - uses: Swatinem/rust-cache@v2
       - run: cargo clippy -p apricity-ffi --target wasm32-unknown-unknown --features wasm -- -D warnings
-      - name: Install wasm-bindgen-cli
-        # Pin to the version of `wasm-bindgen` declared by `apricity-ffi`.
-        # Ahead of `pnpm build:wasm` so the post-cargo step finds the binary.
-        run: cargo install wasm-bindgen-cli --version 0.2.130 --locked
-      - uses: pnpm/action-setup@v3
+      - uses: taiki-e/install-action@v2
         with:
-          version: 9
+          # Must match the `wasm-bindgen` version declared by `apricity-ffi`.
+          tool: wasm-bindgen-cli@0.2.130
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @apricity/web typecheck

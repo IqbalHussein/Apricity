@@ -42,7 +42,7 @@ export const FREE_LIMITS: TierLimits = {
   abGrade: false,
 };
 
-/** PRD §9.1, Pro column (images export at full resolution; 4K/ProRes apply to video in M7). */
+/** PRD §9.1, Pro column (images and video export at full resolution). */
 export const PRO_LIMITS: TierLimits = {
   importsPerMonth: null,
   promptsPerMonth: null,

@@ -2,8 +2,8 @@
 //!
 //! A [`Recipe`] wraps [`GradeParameters`] plus metadata (name, id, prompt,
 //! timestamps, opt-in sharing flag). Persistence is host-supplied through
-//! [`RecipeStore`] so the same crate drives `localStorage`/OPFS on the web,
-//! files on desktop, and Room/Core Data on mobile. Time is always injected
+//! [`RecipeStore`]. On the web the host implements it over IndexedDB
+//! (ADR-0010); desktop and mobile hosts supply their own storage. Time is always injected
 //! as epoch milliseconds; this crate never reads a clock.
 //!
 //! Every `GradeParameters` entering a recipe (creation or parsing) passes

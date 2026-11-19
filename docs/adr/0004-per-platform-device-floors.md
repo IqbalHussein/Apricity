@@ -1,6 +1,7 @@
 # ADR-0004: Per-Platform Device Floors
 
 - Status: accepted
+- Amended by: ADR-0007 (fallback is the CPU reference pipeline, NGA stays enabled)
 - Date: 2026-05-05
 
 ## Context
