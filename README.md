@@ -2,7 +2,7 @@
 
 Apricity is a color grading app that runs in the browser. You describe a look in plain words, like "cold, desaturated noir", and an on-device agent turns it into explicit color adjustments. Every adjustment is listed with the reason for it and is a control you can change by hand.
 
-**Live app:** https://iqbalhussein.github.io/Apricity/ (goes live once GitHub Pages is enabled for the repository and this branch is merged to `main`; see [Deploy](#deploy)).
+**Live app:** https://iqbalhussein.github.io/Apricity/ (redeployed on every push to `main`; see [Deploy](#deploy)).
 
 **Privacy.** All processing happens on your device. Your photos and videos are never uploaded. The app has no server: it loads its code from GitHub Pages, and everything after that, including the AI agent, runs inside your browser. Recipes, history, imported LUTs and usage counters are stored in your browser's IndexedDB and stay there.
 

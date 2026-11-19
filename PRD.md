@@ -2,7 +2,7 @@
 
 **Version:** 1.0  
 **Date:** May 4, 2026  
-**Status:** v1.0 web shell implemented (scope per ADR-0005); pending deploy to GitHub Pages (ADR-0008). Beta: all features unlocked (ADR-0009).
+**Status:** v1.0 web released 2026-11-19 at https://iqbalhussein.github.io/Apricity/ (scope per ADR-0005; GitHub Pages per ADR-0008). Beta: all features unlocked (ADR-0009).
 
 ---
 

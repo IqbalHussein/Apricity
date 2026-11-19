@@ -2,9 +2,11 @@
 
 All notable changes to Apricity are recorded here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — v1.0.0
+## [Unreleased]
 
-The v1.0 web release. It is implemented and waits on the first deploy to GitHub Pages.
+## [1.0.0] — 2026-11-19
+
+The v1.0 web release, deployed to GitHub Pages at https://iqbalhussein.github.io/Apricity/.
 
 ### Added
 
