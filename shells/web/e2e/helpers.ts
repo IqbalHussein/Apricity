@@ -1,10 +1,20 @@
 import { expect } from "@playwright/test";
 import type { Page, TestInfo } from "@playwright/test";
 
-/** Open the app; the `cpu-fallback` project appends `?cpu=1` to force the CPU renderer. */
-export async function openApp(page: Page, testInfo: TestInfo): Promise<void> {
-  const cpu = testInfo.project.metadata.cpu === true;
-  await page.goto(cpu ? "./?cpu=1" : "./");
+/**
+ * Open the app; the `cpu-fallback` project appends `?cpu=1` to force the CPU
+ * renderer. Onboarding is off unless `query.onboarding` says otherwise.
+ *
+ * @param query - Extra query parameters, e.g. `{ beta: "0" }`.
+ */
+export async function openApp(
+  page: Page,
+  testInfo: TestInfo,
+  query: Record<string, string> = {},
+): Promise<void> {
+  const q = new URLSearchParams({ onboarding: "0", ...query });
+  if (testInfo.project.metadata.cpu === true) q.set("cpu", "1");
+  await page.goto(`./?${q.toString()}`);
   await expect(page.getByText("Open a photo or video to start grading.")).toBeVisible();
 }
 

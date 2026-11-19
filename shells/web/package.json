@@ -16,6 +16,8 @@
     "typecheck": "pnpm run build:wasm && tsc --noEmit"
   },
   "dependencies": {
+    "mp4-muxer": "^5.2.2",
+    "mp4box": "^2.5.0",
     "solid-js": "^1.8.0"
   },
   "devDependencies": {
