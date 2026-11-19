@@ -117,6 +117,9 @@ test("LUT import, active state and removal", async ({ page }, testInfo) => {
   for (let b = 0; b < 2; b++)
     for (let g = 0; g < 2; g++)
       for (let r = 0; r < 2; r++) lines.push(`${r * 0.9} ${g * 0.8} ${b}`);
+  const toggle = page.locator('section[data-group="LUT"] .section-toggle');
+  await toggle.scrollIntoViewIfNeeded();
+  if ((await toggle.getAttribute("aria-expanded")) !== "true") await toggle.click();
   const lutButton = page.getByTestId("lut-import");
   await lutButton.scrollIntoViewIfNeeded();
   const [chooser] = await Promise.all([page.waitForEvent("filechooser"), lutButton.click()]);
@@ -168,7 +171,7 @@ test("Free tier (?beta=0) caps export at 2048 px on the long edge", async ({ pag
   });
   const [chooser] = await Promise.all([
     page.waitForEvent("filechooser"),
-    page.getByRole("button", { name: "Open file" }).first().click(),
+    page.locator(".empty").getByRole("button", { name: "Open file" }).click(),
   ]);
   await chooser.setFiles({ name: "big.png", mimeType: "image/png", buffer: Buffer.from(b64, "base64") });
   await expect(page.getByRole("img", { name: "Image preview" })).toBeVisible();
