@@ -123,7 +123,9 @@ pub fn encode(
         }
         ExportFormat::Jpeg { quality } => {
             let rgb: Vec<u8> = rgba8
-                .chunks_exact(4)
+                .as_chunks::<4>()
+                .0
+                .iter()
                 .flat_map(|p| [p[0], p[1], p[2]])
                 .collect();
             JpegEncoder::new_with_quality(&mut out, quality.clamp(1, 100)).write_image(
@@ -174,7 +176,7 @@ mod tests {
             .sum::<u32>() as f32
             / src.len() as f32;
         assert!(mean_err < 4.0, "mean abs error {mean_err}");
-        assert!(d.rgba8.chunks_exact(4).all(|p| p[3] == 255));
+        assert!(d.rgba8.as_chunks::<4>().0.iter().all(|p| p[3] == 255));
     }
 
     #[test]

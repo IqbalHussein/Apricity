@@ -31,7 +31,10 @@ pub fn downscale_to_fit(img: &DecodedImage, max_dim: u32) -> DecodedImage {
             let (x0, x1) = span(dx, nw, w);
             let (mut r, mut g, mut b, mut a) = (0u64, 0u64, 0u64, 0u64);
             for y in y0..y1 {
-                for p in img.rgba8[(y * w + x0) * 4..(y * w + x1) * 4].chunks_exact(4) {
+                for p in img.rgba8[(y * w + x0) * 4..(y * w + x1) * 4]
+                    .as_chunks::<4>()
+                    .0
+                {
                     let pa = p[3] as u64;
                     r += p[0] as u64 * pa;
                     g += p[1] as u64 * pa;
@@ -108,7 +111,12 @@ mod tests {
     fn uniform_stays_uniform_and_transparent_does_not_bleed() {
         let a = img(7, 5, |_, _| [10, 20, 30, 255]);
         let d = downscale_to_fit(&a, 3);
-        assert!(d.rgba8.chunks_exact(4).all(|p| p == [10, 20, 30, 255]));
+        assert!(d
+            .rgba8
+            .as_chunks::<4>()
+            .0
+            .iter()
+            .all(|p| *p == [10, 20, 30, 255]));
         let b = img(2, 1, |x, _| {
             if x == 0 {
                 [255, 0, 0, 255]

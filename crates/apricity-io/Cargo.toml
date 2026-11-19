@@ -4,6 +4,7 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
+repository.workspace = true
 description = "Image read/write with color-space tagging. Video I/O is host-supplied via traits."
 
 [dependencies]

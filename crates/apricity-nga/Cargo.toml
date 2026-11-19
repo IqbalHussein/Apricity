@@ -4,6 +4,7 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
+repository.workspace = true
 description = "Neural Grading Agent: deterministic on-device lexicon engine, prompt → GradeParameters, Explainability differ."
 
 [features]

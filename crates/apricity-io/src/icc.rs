@@ -47,7 +47,9 @@ fn parse_mluc(d: &[u8]) -> Option<String> {
     let off = be_u32(d, 24)?;
     let s = d.get(off..off.checked_add(len)?)?;
     let units: Vec<u16> = s
-        .chunks_exact(2)
+        .as_chunks::<2>()
+        .0
+        .iter()
         .map(|c| u16::from_be_bytes([c[0], c[1]]))
         .collect();
     Some(

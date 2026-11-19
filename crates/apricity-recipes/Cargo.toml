@@ -4,6 +4,7 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
+repository.workspace = true
 description = "Recipe model, in-memory store, and persistence trait. Host shells implement I/O."
 
 [features]

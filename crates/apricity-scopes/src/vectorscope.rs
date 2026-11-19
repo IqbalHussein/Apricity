@@ -54,7 +54,11 @@ pub fn vectorscope(pixels: &[[f32; 3]], size: u32) -> ScopeImage {
         return img;
     };
     let alpha = AlphaMap::new(reference);
-    for ((&c, sum), px) in counts.iter().zip(&sums).zip(img.rgba.chunks_exact_mut(4)) {
+    for ((&c, sum), px) in counts
+        .iter()
+        .zip(&sums)
+        .zip(img.rgba.as_chunks_mut::<4>().0.iter_mut())
+    {
         if c == 0 {
             continue;
         }

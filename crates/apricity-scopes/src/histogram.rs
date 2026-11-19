@@ -36,12 +36,12 @@ pub fn histogram(pixels: &[[f32; 3]]) -> Histogram {
         t[2][bin(p[2])] += 1;
         t[3][bin(luma(p))] += 1;
     };
-    let mut pairs = pixels.chunks_exact(2);
-    for pair in &mut pairs {
+    let (pairs, rest) = pixels.as_chunks::<2>();
+    for pair in pairs {
         add(&mut t[0], &pair[0]);
         add(&mut t[1], &pair[1]);
     }
-    for p in pairs.remainder() {
+    for p in rest {
         add(&mut t[0], p);
     }
     let sum = |c: usize| (0..256).map(|i| t[0][c][i] + t[1][c][i]).collect();

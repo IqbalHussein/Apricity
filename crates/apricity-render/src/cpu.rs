@@ -452,7 +452,9 @@ pub fn render_rgba8(u: &GradeUniforms, lut: Option<&Lut3d>, src: &[u8], w: u32, 
 /// Decode an RGBA8 source to scene-linear Rec.2020 (no correction), for
 /// [`apricity_core::analysis::analyze`].
 pub fn decode_linear(u: &GradeUniforms, src: &[u8]) -> Vec<[f32; 3]> {
-    src.chunks_exact(4)
+    src.as_chunks::<4>()
+        .0
+        .iter()
         .map(|p| {
             let s = Vec3::new(p[0] as f32, p[1] as f32, p[2] as f32) / 255.0;
             decode_source(u, s).to_array()

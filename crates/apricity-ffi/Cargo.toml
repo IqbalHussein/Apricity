@@ -4,6 +4,7 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
+repository.workspace = true
 description = "FFI surface: WASM bindings for web, UniFFI bindings for Kotlin (Android) and Swift (iOS)."
 
 [lib]
